@@ -1,0 +1,38 @@
+{
+    "author": "Antonio",
+    "version": "1.0",
+    "page_principal": {
+        "estrutura": "4",
+        "widget_top": "cabecalho.html",
+        "widget_center": "pagina-inicial.html",
+        "widget_bottom": "rodape.html"
+    },
+    "page_geral": {
+        "estrutura": "4",
+        "widget_top": "cabecalho.html",
+        "widget_bottom": "rodape.html"
+    },
+    "page_category": {
+        "estrutura": "4",
+        "widget_top": "cabecalho.html",
+        "widget_center": "categorias.html",
+        "widget_bottom": "rodape.html"
+    },
+    "page_product_detail": {
+        "estrutura": "4",
+        "widget_top": "cabecalho.html",
+        "widget_center": "detalhe-do-produto.html",
+        "widget_bottom": "rodape.html"
+    },
+    "page_search": {
+        "estrutura": "4",
+        "widget_top": "cabecalho.html",
+        "widget_center": "busca.html",
+        "widget_bottom": "rodape.html"
+    },
+    "page_checkout": {
+        "estrutura": "4",
+        "widget_top": "cabecalho.html",
+        "widget_bottom": "rodape.html"
+    }
+}

@@ -1,0 +1,76 @@
+{# ================================================
+   WIDGET: BOX DO PRODUTO
+   ================================================
+   Baseado no site real Vancouver
+   Estrutura exata do template original
+#}
+
+{% set box = html.productBox(produto, {total_fotos: '2'}) %}
+
+<div class="item" data-id="{{ produto.id }}" data-sku="{{ produto.url_sku }}">
+    {# Link da Foto #}
+    <a href="{{ box.url_relative }}" class="foto_wrapper">
+        <div class="fotos">
+            <div class="it hover">
+                {{ box.fotos }}
+            </div>
+        </div>
+    </a>
+    
+    {# Selos #}
+    {% if box.selos %}
+    <div class="selos">
+        {{ box.selos }}
+    </div>
+    {% endif %}
+    
+    {# Desconto Percentual #}
+    {% if box.desconto %}
+    <span class="porc_desconto">
+        {{ box.desconto }}
+    </span>
+    {% endif %}
+    
+    {# Título #}
+    <a href="{{ box.url_relative }}">
+        <h3 class="produto" title="{{ box.titulo }}" 
+            data-grade="{{ produto.grade ? '1' : '0' }}" 
+            data-canbuy="1">
+            {{ box.titulo }}
+        </h3>
+    </a>
+    
+    {# Valores #}
+    <div class="valor">
+        {{ box.valor }}
+    </div>
+    
+    {# Parcelamento #}
+    {% if box.parcelamento %}
+    <div class="parcelamento">
+        {{ box.parcelamento }}
+    </div>
+    {% endif %}
+    
+    {# Frete Grátis #}
+    {% if box.frete_gratis %}
+    <div class="frete-gratis">
+        <i class="ri-truck-line"></i>
+        {{ box.frete_gratis }}
+    </div>
+    {% endif %}
+    
+    {# Contador Regressivo #}
+    {% if box.countdown %}
+    <div class="countdown-box">
+        {{ box.countdown }}
+    </div>
+    {% endif %}
+    
+    {# Botões de Ação #}
+    <div class="botoes">
+        <a href="{{ box.url_relative }}" class="b_acao block">
+            <i class="fa fa-shopping-bag"></i> Comprar
+        </a>
+    </div>
+</div>

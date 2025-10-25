@@ -1,0 +1,519 @@
+{% set carrinho = store.cart() %}
+{% set valores = carrinho.cart.amount %}
+
+<div class="suspended-cart-header drop-header">
+    <h3>Meu carrinho{% if carrinho.total_items > 0 %} ({{ carrinho.total_items }} {{ carrinho.total_items == 1 ? 'item' : 'itens' }}){% endif %}</h3>
+    <span class="fechar" title="Fechar">&times;</span>
+</div>
+
+{% if carrinho.total_items == 0 %}
+<!-- ============================================ -->
+<!-- CARRINHO VAZIO -->
+<!-- ============================================ -->
+<div class="msg-empty">
+    <div class="icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="64" height="64" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4.00436 6.41686L0.761719 3.17422L2.17593 1.76001L5.41857 5.00265H20.6603C21.2126 5.00265 21.6603 5.45037 21.6603 6.00265C21.6603 6.09997 21.6461 6.19678 21.6182 6.29L19.2182 14.29C19.0913 14.713 18.7019 15.0027 18.2603 15.0027H6.00436V17.0027H17.0044V19.0027H5.00436C4.45207 19.0027 4.00436 18.5549 4.00436 18.0027V6.41686ZM6.00436 7.00265V13.0027H17.5163L19.3163 7.00265H6.00436ZM5.50436 23.0027C4.67593 23.0027 4.00436 22.3311 4.00436 21.5027C4.00436 20.6742 4.67593 20.0027 5.50436 20.0027C6.33279 20.0027 7.00436 20.6742 7.00436 21.5027C7.00436 22.3311 6.33279 23.0027 5.50436 23.0027ZM17.5044 23.0027C16.6759 23.0027 16.0044 22.3311 16.0044 21.5027C16.0044 20.6742 16.6759 20.0027 17.5044 20.0027C18.3328 20.0027 19.0044 20.6742 19.0044 21.5027C19.0044 22.3311 18.3328 23.0027 17.5044 23.0027Z"></path>
+        </svg>
+    </div>
+    <h3>Seu carrinho está vazio.</h3>
+    <p>Para continuar comprando, navegue pelo menu do site ou utilize nossa busca para encontrar produtos incríveis!</p>
+    <a href="#" class="adicionar-agora fechar">
+        <i class="ri-shopping-bag-line"></i>
+        Escolher produtos
+    </a>
+</div>
+
+{% else %}
+<!-- ============================================ -->
+<!-- LISTA DE PRODUTOS -->
+<!-- ============================================ -->
+<div class="drop-list">
+    {% for item in carrinho.cart.items %}
+    <div class="item" data-sku="{{ item.sku }}" data-pid="{{ item.pid }}">
+        <div class="foto">
+            <a href="{{ item.url_relative }}">
+                <img src="{{ item.foto }}" alt="{{ item.produto }}" class="img-fluid" loading="lazy" />
+            </a>
+        </div>
+        <div class="det">
+            <a href="{{ item.url_relative }}" class="produto">
+                <strong>{{ item.produto }}</strong>
+            </a>
+            
+            {% if item.cor or item.variacao %}
+            <div class="variacao">
+                {{ item.variacao_raw|raw }}
+            </div>
+            {% endif %}
+            
+            {% if item.prazo_entrega > 0 %}
+            <div class="prazo">
+                {{ item.prazo_entrega_raw|raw }}
+            </div>
+            {% endif %}
+            
+            <div class="valores">
+                <span class="quantidade">{{ item.quantidade }}x R${{ item.valor_unitario|valor }}</span>
+                <span class="total"><strong>R${{ item.valor_parcial|valor }}</strong></span>
+            </div>
+            
+            <button class="item-delete" data-sku="{{ item.sku }}" title="Remover item">
+                <i class="ri-delete-bin-line"></i>
+            </button>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- ============================================ -->
+<!-- RESUMO E AÇÕES -->
+<!-- ============================================ -->
+<div class="drop-footer">
+    <div class="resumo">
+        <div class="item">
+            <span>Subtotal</span>
+            <span class="valor">R${{ valores.subtotal|valor }}</span>
+        </div>
+        
+        {% if valores.discount > 0 %}
+        <div class="item desconto">
+            <span>Desconto</span>
+            <span class="valor text-success">-R${{ valores.discount|valor }}</span>
+        </div>
+        {% endif %}
+        
+        {% if valores.freight.valor > 0 %}
+        <div class="item frete">
+            <span>Frete ({{ valores.freight.servico }})</span>
+            <span class="valor">R${{ valores.freight.valor|valor }}</span>
+        </div>
+        {% endif %}
+        
+        <div class="item total">
+            <span><strong>Total</strong></span>
+            <span class="valor"><strong>R${{ valores.total|valor }}</strong></span>
+        </div>
+    </div>
+    
+    <div class="botoes">
+        <a href="#" class="bt-continuar fechar">
+            <i class="ri-arrow-left-line"></i>
+            Continuar comprando
+        </a>
+        <a href="carrinho/" class="bt-finalizar">
+            Finalizar compra
+            <i class="ri-arrow-right-line"></i>
+        </a>
+    </div>
+    
+    {% if global.var_frete_gratis_valor > 0 %}
+    <div class="frete-gratis-info">
+        {% set falta = global.var_frete_gratis_valor - valores.subtotal %}
+        {% if falta > 0 %}
+        <p class="text-muted">
+            <i class="ri-truck-line"></i>
+            Faltam <strong>R${{ falta|valor }}</strong> para ganhar <strong>frete grátis</strong>!
+        </p>
+        {% else %}
+        <p class="text-success">
+            <i class="ri-checkbox-circle-line"></i>
+            Você ganhou <strong>frete grátis</strong>!
+        </p>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endif %}
+
+<!-- ============================================ -->
+<!-- ESTILOS CSS -->
+<!-- ============================================ -->
+<style>
+/* Header */
+.suspended-cart-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
+    border-bottom: 1px solid #e0e0e0;
+    background: #fff;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.suspended-cart-header h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0;
+    color: #333;
+}
+
+.suspended-cart-header .fechar {
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    line-height: 1;
+    cursor: pointer;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    transition: all 0.2s ease;
+    color: #666;
+}
+
+.suspended-cart-header .fechar:hover {
+    background: #f5f5f5;
+    color: #333;
+}
+
+/* Mensagem Vazio */
+.msg-empty {
+    padding: 80px 30px;
+    text-align: center;
+}
+
+.msg-empty .icon {
+    margin-bottom: 20px;
+    color: #ccc;
+}
+
+.msg-empty h3 {
+    font-size: 22px;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.msg-empty p {
+    color: #666;
+    margin-bottom: 30px;
+    line-height: 1.6;
+    max-width: 300px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.msg-empty .adicionar-agora {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 30px;
+    background: var(--cor_primaria, #4CAF50);
+    color: #fff;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 15px;
+    transition: all 0.25s ease;
+}
+
+.msg-empty .adicionar-agora:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.msg-empty .adicionar-agora i {
+    font-size: 20px;
+}
+
+/* Lista de Produtos */
+.drop-list {
+    max-height: calc(100vh - 400px);
+    overflow-y: auto;
+    padding: 15px 0;
+}
+
+.drop-list .item {
+    display: flex;
+    gap: 15px;
+    padding: 15px 20px;
+    border-bottom: 1px solid #f0f0f0;
+    position: relative;
+    transition: background 0.2s ease;
+}
+
+.drop-list .item:hover {
+    background: #fafafa;
+}
+
+.drop-list .item:last-child {
+    border-bottom: none;
+}
+
+.drop-list .foto {
+    width: 80px;
+    height: 80px;
+    flex-shrink: 0;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.drop-list .foto img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.drop-list .det {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    position: relative;
+}
+
+.drop-list .det .produto {
+    color: #333;
+    text-decoration: none;
+    font-size: 14px;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.drop-list .det .produto:hover {
+    color: var(--cor_primaria, #4CAF50);
+}
+
+.drop-list .det .variacao,
+.drop-list .det .prazo {
+    font-size: 12px;
+    color: #666;
+}
+
+.drop-list .det .valores {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    color: #666;
+    margin-top: auto;
+}
+
+.drop-list .det .valores .total {
+    color: #333;
+    font-size: 15px;
+}
+
+.drop-list .item-delete {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    cursor: pointer;
+    color: #999;
+    transition: all 0.2s ease;
+}
+
+.drop-list .item-delete:hover {
+    background: #fee;
+    border-color: #fcc;
+    color: #f44336;
+}
+
+.drop-list .item-delete i {
+    font-size: 16px;
+}
+
+/* Footer / Resumo */
+.drop-footer {
+    padding: 20px;
+    border-top: 2px solid #e0e0e0;
+    background: #fafafa;
+}
+
+.drop-footer .resumo {
+    margin-bottom: 20px;
+}
+
+.drop-footer .resumo .item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    font-size: 14px;
+    color: #666;
+}
+
+.drop-footer .resumo .item.total {
+    padding-top: 12px;
+    margin-top: 8px;
+    border-top: 1px solid #ddd;
+    font-size: 16px;
+    color: #333;
+}
+
+.drop-footer .resumo .item .valor {
+    font-weight: 500;
+}
+
+.drop-footer .resumo .item.desconto .valor {
+    color: #4CAF50;
+}
+
+.drop-footer .botoes {
+    display: flex;
+    gap: 10px;
+}
+
+.drop-footer .botoes a {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 14px 20px;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.25s ease;
+}
+
+.drop-footer .bt-continuar {
+    background: #fff;
+    border: 1px solid #ddd;
+    color: #333;
+}
+
+.drop-footer .bt-continuar:hover {
+    background: #f5f5f5;
+}
+
+.drop-footer .bt-finalizar {
+    background: var(--cor_primaria, #4CAF50);
+    border: 1px solid transparent;
+    color: #fff;
+}
+
+.drop-footer .bt-finalizar:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+}
+
+.drop-footer .frete-gratis-info {
+    margin-top: 15px;
+    padding: 12px;
+    background: #fff;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.drop-footer .frete-gratis-info p {
+    margin: 0;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.drop-footer .frete-gratis-info i {
+    font-size: 18px;
+}
+
+.text-success {
+    color: #4CAF50;
+}
+
+.text-muted {
+    color: #666;
+}
+</style>
+
+<!-- ============================================ -->
+<!-- SCRIPTS JAVASCRIPT -->
+<!-- ============================================ -->
+<script>
+(function($) {
+    'use strict';
+
+    $(function() {
+        // Atualizar contador no header
+        updateHeaderCartCount();
+        
+        // Remover item do carrinho
+        initCartRemove();
+        
+        // Fechar carrinho
+        initCloseCart();
+    });
+
+    /**
+     * Atualiza contador no header
+     */
+    function updateHeaderCartCount() {
+        const totalItems = {{ carrinho.total_items }};
+        
+        $('header .cart-header-total-items').text(totalItems);
+        
+        if (totalItems > 0) {
+            $('header .cart-header-total-items').removeClass('hide').show();
+        } else {
+            $('header .cart-header-total-items').addClass('hide').hide();
+        }
+    }
+
+    /**
+     * Remover item do carrinho
+     */
+    function initCartRemove() {
+        $('.item-delete').on('click', function(e) {
+            e.preventDefault();
+            
+            const $button = $(this);
+            const sku = $button.data('sku');
+            const $item = $button.closest('.item');
+            
+            // Confirmar remoção
+            if (!confirm('Deseja remover este item do carrinho?')) {
+                return;
+            }
+            
+            // Adiciona loading
+            $button.prop('disabled', true).html('<i class="ri-loader-4-line"></i>');
+            $item.css('opacity', '0.5');
+            
+            // Remove do carrinho
+            if (typeof cartRemoveItem === 'function') {
+                cartRemoveItem(sku);
+            } else {
+                // Fallback: reload
+                $.post('cart-update.php', {
+                    action: 'remove',
+                    sku: sku
+                }, function() {
+                    location.reload();
+                });
+            }
+        });
+    }
+
+    /**
+     * Fechar carrinho
+     */
+    function initCloseCart() {
+        $('.fechar').on('click', function(e) {
+            e.preventDefault();
+            
+            $('.suspended-cart').removeClass('open');
+            $('body, header').removeClass('no-scroll');
+        });
+    }
+
+})(jQuery);
+</script>

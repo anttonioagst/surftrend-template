@@ -1,0 +1,339 @@
+{
+  "configuracoes": [
+    {
+      "grupo": "Cores Principais",
+      "itens": [
+        {
+          "id": "cor_primaria",
+          "label": "Cor Primária",
+          "type": "color",
+          "value": "#000000",
+          "css_var": "--cor-primaria"
+        },
+        {
+          "id": "cor_secundaria",
+          "label": "Cor Secundária",
+          "type": "color",
+          "value": "#ffffff",
+          "css_var": "--cor-secundaria"
+        },
+        {
+          "id": "cor_destaque",
+          "label": "Cor de Destaque",
+          "type": "color",
+          "value": "#333333",
+          "css_var": "--cor-destaque"
+        },
+        {
+          "id": "cor_fundo",
+          "label": "Cor de Fundo",
+          "type": "color",
+          "value": "#ffffff",
+          "css_var": "--cor-fundo"
+        },
+        {
+          "id": "cor_texto",
+          "label": "Cor do Texto",
+          "type": "color",
+          "value": "#000000",
+          "css_var": "--cor-texto"
+        },
+        {
+          "id": "cor_texto_claro",
+          "label": "Cor do Texto Claro",
+          "type": "color",
+          "value": "#666666",
+          "css_var": "--cor-texto-claro"
+        },
+        {
+          "id": "cor_borda",
+          "label": "Cor das Bordas",
+          "type": "color",
+          "value": "#e0e0e0",
+          "css_var": "--cor-borda"
+        }
+      ]
+    },
+    {
+      "grupo": "Topo",
+      "itens": [
+        {
+          "id": "topo_fundo",
+          "label": "Fundo do Topo",
+          "type": "color",
+          "value": "#ffffff",
+          "css_var": "--topo-fundo"
+        },
+        {
+          "id": "topo_texto",
+          "label": "Cor do Texto do Topo",
+          "type": "color",
+          "value": "#000000",
+          "css_var": "--topo-texto"
+        },
+        {
+          "id": "topo_borda",
+          "label": "Cor da Borda do Topo",
+          "type": "color",
+          "value": "#e0e0e0",
+          "css_var": "--topo-borda"
+        },
+        {
+          "id": "topo_altura",
+          "label": "Altura do Topo",
+          "type": "text",
+          "value": "80px",
+          "css_var": "--topo-altura",
+          "placeholder": "ex: 80px"
+        }
+      ]
+    },
+    {
+      "grupo": "Menu",
+      "itens": [
+        {
+          "id": "menu_fundo",
+          "label": "Fundo do Menu",
+          "type": "color",
+          "value": "#000000",
+          "css_var": "--menu-fundo"
+        },
+        {
+          "id": "menu_texto",
+          "label": "Cor do Texto do Menu",
+          "type": "color",
+          "value": "#ffffff",
+          "css_var": "--menu-texto"
+        },
+        {
+          "id": "menu_hover_fundo",
+          "label": "Fundo do Menu (Hover)",
+          "type": "color",
+          "value": "#333333",
+          "css_var": "--menu-hover-fundo"
+        },
+        {
+          "id": "menu_hover_texto",
+          "label": "Texto do Menu (Hover)",
+          "type": "color",
+          "value": "#ffffff",
+          "css_var": "--menu-hover-texto"
+        }
+      ]
+    },
+    {
+      "grupo": "Botões",
+      "itens": [
+        {
+          "id": "botao_primario_fundo",
+          "label": "Botão Primário - Fundo",
+          "type": "color",
+          "value": "#000000",
+          "css_var": "--botao-primario-fundo"
+        },
+        {
+          "id": "botao_primario_texto",
+          "label": "Botão Primário - Texto",
+          "type": "color",
+          "value": "#ffffff",
+          "css_var": "--botao-primario-texto"
+        },
+        {
+          "id": "botao_primario_hover_fundo",
+          "label": "Botão Primário - Fundo (Hover)",
+          "type": "color",
+          "value": "#333333",
+          "css_var": "--botao-primario-hover-fundo"
+        },
+        {
+          "id": "botao_primario_hover_texto",
+          "label": "Botão Primário - Texto (Hover)",
+          "type": "color",
+          "value": "#ffffff",
+          "css_var": "--botao-primario-hover-texto"
+        },
+        {
+          "id": "botao_secundario_fundo",
+          "label": "Botão Secundário - Fundo",
+          "type": "color",
+          "value": "#ffffff",
+          "css_var": "--botao-secundario-fundo"
+        },
+        {
+          "id": "botao_secundario_texto",
+          "label": "Botão Secundário - Texto",
+          "type": "color",
+          "value": "#000000",
+          "css_var": "--botao-secundario-texto"
+        },
+        {
+          "id": "botao_secundario_borda",
+          "label": "Botão Secundário - Borda",
+          "type": "color",
+          "value": "#000000",
+          "css_var": "--botao-secundario-borda"
+        }
+      ]
+    },
+    {
+      "grupo": "Rodapé",
+      "itens": [
+        {
+          "id": "rodape_fundo",
+          "label": "Fundo do Rodapé",
+          "type": "color",
+          "value": "#000000",
+          "css_var": "--rodape-fundo"
+        },
+        {
+          "id": "rodape_texto",
+          "label": "Texto do Rodapé",
+          "type": "color",
+          "value": "#ffffff",
+          "css_var": "--rodape-texto"
+        },
+        {
+          "id": "rodape_titulo",
+          "label": "Títulos do Rodapé",
+          "type": "color",
+          "value": "#ffffff",
+          "css_var": "--rodape-titulo"
+        },
+        {
+          "id": "rodape_link_hover",
+          "label": "Links do Rodapé (Hover)",
+          "type": "color",
+          "value": "#cccccc",
+          "css_var": "--rodape-link-hover"
+        }
+      ]
+    },
+    {
+      "grupo": "Tipografia",
+      "itens": [
+        {
+          "id": "fonte_principal",
+          "label": "Fonte Principal",
+          "type": "text",
+          "value": "-apple-system, BlinkMacSystemFont, \\"Segoe UI\\", Roboto, \\"Helvetica Neue\\", Arial, sans-serif",
+          "css_var": "--fonte-principal",
+          "placeholder": "Nome da fonte"
+        },
+        {
+          "id": "fonte_tamanho_base",
+          "label": "Tamanho Base da Fonte",
+          "type": "text",
+          "value": "16px",
+          "css_var": "--fonte-tamanho-base",
+          "placeholder": "ex: 16px"
+        },
+        {
+          "id": "fonte_tamanho_h1",
+          "label": "Tamanho do H1",
+          "type": "text",
+          "value": "32px",
+          "css_var": "--fonte-tamanho-h1",
+          "placeholder": "ex: 32px"
+        },
+        {
+          "id": "fonte_tamanho_h2",
+          "label": "Tamanho do H2",
+          "type": "text",
+          "value": "28px",
+          "css_var": "--fonte-tamanho-h2",
+          "placeholder": "ex: 28px"
+        },
+        {
+          "id": "fonte_tamanho_h3",
+          "label": "Tamanho do H3",
+          "type": "text",
+          "value": "24px",
+          "css_var": "--fonte-tamanho-h3",
+          "placeholder": "ex: 24px"
+        }
+      ]
+    },
+    {
+      "grupo": "Espaçamentos",
+      "itens": [
+        {
+          "id": "espacamento_xs",
+          "label": "Espaçamento Extra Pequeno",
+          "type": "text",
+          "value": "4px",
+          "css_var": "--espacamento-xs",
+          "placeholder": "ex: 4px"
+        },
+        {
+          "id": "espacamento_sm",
+          "label": "Espaçamento Pequeno",
+          "type": "text",
+          "value": "8px",
+          "css_var": "--espacamento-sm",
+          "placeholder": "ex: 8px"
+        },
+        {
+          "id": "espacamento_md",
+          "label": "Espaçamento Médio",
+          "type": "text",
+          "value": "16px",
+          "css_var": "--espacamento-md",
+          "placeholder": "ex: 16px"
+        },
+        {
+          "id": "espacamento_lg",
+          "label": "Espaçamento Grande",
+          "type": "text",
+          "value": "24px",
+          "css_var": "--espacamento-lg",
+          "placeholder": "ex: 24px"
+        },
+        {
+          "id": "espacamento_xl",
+          "label": "Espaçamento Extra Grande",
+          "type": "text",
+          "value": "32px",
+          "css_var": "--espacamento-xl",
+          "placeholder": "ex: 32px"
+        }
+      ]
+    },
+    {
+      "grupo": "Bordas e Raios",
+      "itens": [
+        {
+          "id": "borda_radius_pequeno",
+          "label": "Raio de Borda Pequeno",
+          "type": "text",
+          "value": "4px",
+          "css_var": "--borda-radius-pequeno",
+          "placeholder": "ex: 4px"
+        },
+        {
+          "id": "borda_radius_medio",
+          "label": "Raio de Borda Médio",
+          "type": "text",
+          "value": "8px",
+          "css_var": "--borda-radius-medio",
+          "placeholder": "ex: 8px"
+        },
+        {
+          "id": "borda_radius_grande",
+          "label": "Raio de Borda Grande",
+          "type": "text",
+          "value": "12px",
+          "css_var": "--borda-radius-grande",
+          "placeholder": "ex: 12px"
+        },
+        {
+          "id": "borda_espessura",
+          "label": "Espessura da Borda",
+          "type": "text",
+          "value": "1px",
+          "css_var": "--borda-espessura",
+          "placeholder": "ex: 1px"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,598 @@
+{% set vitrine_ids = store.showcaseActiveIds() %}
+
+<div id="page_home">
+    <!-- Banner Principal / Slider -->
+    {% set slides = store.mainBanner() %}
+    {% if slides.items|length >= 1 %}
+    <div class="banner-topo">
+        <div class="central">
+            <div class="boxed-banner">
+                <div id="home-slide" class="owl-carousel owl-theme">
+                    {% for slide in slides.items %}
+                    <div class="item">
+                        <div class="{{ slide.foto_mobile == '' ? 'block' : 'd-none d-md-block' }}">
+                            {{ slide.desktop_raw|raw }}
+                        </div>
+                        {% if slide.foto_mobile %}
+                        <div class="d-block d-md-none">
+                            {{ slide.mobile_raw|raw }}
+                        </div>
+                        {% endif %}
+                        
+                        {% if slide.avancado.texto %}
+                        <div class="overlay">
+                            <p class="title" style="color: {{ slide.avancado.cor_texto }};">
+                                {{ slide.avancado.texto|raw }}
+                            </p>
+                            {% if slide.link %}
+                            <button onclick="location.href='{{ slide.link }}'">
+                                Ver mais
+                            </button>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Alertas Destaque -->
+    {% set alertas = store.featuredIcon() %}
+    {% if alertas|length > 0 %}
+    <section id="alerts" class="pt-0">
+        <div class="central">
+            {% for alerta in alertas %}
+            <div class="item">
+                {% if alerta.icone_tipo == '1' %}
+                <i class="{{ alerta.icone }}" style="color: {{ alerta.cor_icone }};"></i>
+                {% else %}
+                <img src="{{ alerta.icone }}" alt="{{ alerta.nome }}" />
+                {% endif %}
+                <span>{{ alerta.nome }}</span>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Produtos Visitados (posição 1) -->
+    {% if global.vitrine_visitados_posicao == '1' %}
+    <component data-modulo="produtos-visitados" loading="false" data-shimmer="4"></component>
+    {% endif %}
+
+    <!-- Vitrines de Produtos -->
+    {% set vitrines = store.showcaseProduct() %}
+    {% for vitrine in vitrines %}
+    <section class="vitrine_h" id="vitrine_{{ vitrine.vitrine.id }}">
+        <div class="central">
+            <!-- Banner Superior da Vitrine -->
+            {% if vitrine.vitrine.banner_superior %}
+            <div class="b_large text-center mb-4">
+                {{ vitrine.vitrine.banner_superior|raw }}
+            </div>
+            {% endif %}
+
+            <!-- Título da Vitrine -->
+            {% if vitrine.vitrine.titulo %}
+            <div class="title_wrapper">
+                <h2 class="titulo">{{ vitrine.vitrine.titulo }}</h2>
+            </div>
+            {% endif %}
+
+            <!-- Produtos -->
+            <div class="produtos{% if vitrine.vitrine.banner_superior %} superior{% endif %}{% if vitrine.vitrine.banner_inferior %} inferior{% endif %}">
+                <div class="row{% if vitrine.vitrine.tipo == '1' %} owlCarousel owl-carousel owl-theme{% endif %}">
+                    {% for produto in vitrine.produtos %}
+                    <div class="prod col-md-3 col-6">
+                        {{ include('widgets/box-do-produto.html') }}
+                    </div>
+                    {% endfor %}
+                    
+                    <!-- Ver Mais -->
+                    {% if vitrine.vitrine.url_ver_mais %}
+                    <div class="prod col-md-3 col-6">
+                        <a href="{{ vitrine.vitrine.url_ver_mais }}" class="see_more">
+                            Ver mais produtos
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Banner Inferior da Vitrine -->
+            {% if vitrine.vitrine.banner_inferior %}
+            <div class="b_large text-center mt-4">
+                {{ vitrine.vitrine.banner_inferior|raw }}
+            </div>
+            {% endif %}
+
+            <!-- CTA da Vitrine -->
+            {% if vitrine.vitrine.url_ver_mais %}
+            <div class="vitrine_cta text-center mt-4">
+                <a href="{{ vitrine.vitrine.url_ver_mais }}" class="btn btn-outline-dark">
+                    Ver todos os produtos
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- Google Tags para primeira vitrine -->
+    {% if loop.index0 == 0 %}
+    {{ storeGoogleTags.dataLayerImpressions(vitrine.produtos)|raw }}
+    {% endif %}
+    {% endfor %}
+
+    <!-- Banner de Publicidade - Topo -->
+    {% set bannerTopo = store.publicityBanner({tipo:'21', limit:'2'}) %}
+    {% if bannerTopo|length > 0 %}
+    <div class="banner-topo">
+        <div class="central">
+            <div class="row">
+                {% for banner in bannerTopo %}
+                <div class="col">
+                    {{ banner.raw|raw }}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Banner Central / Carrossel -->
+    {% set bannersCentral = store.publicityBanner({tipo:'25', order:'posicao-asc'}) %}
+    {% if bannersCentral|length > 0 %}
+    <section id="banner-central">
+        <div class="central">
+            <div class="wrapper{% if bannersCentral|length > 3 %} owl-carousel owl-theme{% endif %}">
+                {% for banner in bannersCentral %}
+                <div class="item">
+                    {% if banner.url %}
+                    <a href="{{ banner.url }}" target="{{ banner.target }}" class="image">
+                        <img src="{{ banner.arquivo }}" alt="{{ banner.identificacao }}" class="img-fluid" />
+                    </a>
+                    {% else %}
+                    <div class="image">
+                        <img src="{{ banner.arquivo }}" alt="{{ banner.identificacao }}" class="img-fluid" />
+                    </div>
+                    {% endif %}
+                    {% if banner.identificacao %}
+                    <div class="text">
+                        <p>{{ banner.identificacao }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Banner Personalizado / Categorias -->
+    {% set bannersPersonalizados = store.publicityBanner({tipo:'24', order:'posicao-asc'}) %}
+    {% if bannersPersonalizados|length > 0 %}
+    <section id="banner-personalizado">
+        <div class="central">
+            <div class="wrapper{% if bannersPersonalizados|length > 6 %} owl-carousel owl-theme{% endif %}">
+                {% for banner in bannersPersonalizados %}
+                <div class="item">
+                    <a href="{{ banner.url }}" target="{{ banner.target }}">
+                        {% if banner.formato == '1' %}
+                        <img src="{{ banner.arquivo }}" alt="{{ banner.identificacao }}" />
+                        {% else %}
+                        {{ banner.codigo|raw }}
+                        {% endif %}
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Banner Mid -->
+    {% set bannersMid = store.publicityBanner({tipo:'22', limit:'2'}) %}
+    {% if bannersMid|length > 0 %}
+    <section id="banner-mid">
+        <div class="central">
+            <div class="grid">
+                {% for banner in bannersMid %}
+                <div class="item">
+                    {{ banner.raw|raw }}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Widget Avaliações -->
+    {% set avaliacoes = store.getRatings() %}
+    {% if avaliacoes.items|length > 0 %}
+    <section id="widget_avaliacoes">
+        <div class="central">
+            <h2 class="titulo">{{ global.textos_painel.home_avaliacoes ?: 'O QUE ESTÃO FALANDO DA GENTE' }}</h2>
+            
+            <div class="itens owl-carousel owl-theme mobile">
+                {% for avaliacao in avaliacoes.items %}
+                <div class="item">
+                    <div class="votos">
+                        {% for i in 1..5 %}
+                        <i class="fa fa-star{% if i <= avaliacao.voto %} gold{% endif %}"></i>
+                        {% endfor %}
+                    </div>
+                    
+                    {% if avaliacao.comentario %}
+                    <p class="comentario">{{ avaliacao.comentario }}</p>
+                    {% endif %}
+                    
+                    <a href="{{ avaliacao.produto_url }}" class="product">{{ avaliacao.produto }}</a>
+                    <p class="nome">{{ avaliacao.nome }}</p>
+                </div>
+                {% endfor %}
+                
+                <!-- Ver Mais -->
+                <div class="item">
+                    <a href="avaliacoes/" class="see_more">
+                        Ver todas as avaliações
+                    </a>
+                </div>
+            </div>
+
+            {% if avaliacoes.items|length >= 1 %}
+            <div class="ver_mais text-center">
+                <a href="avaliacoes/" class="btn btn-outline-dark">
+                    Ver todas as avaliações
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Widget Marcas -->
+    {% set marcas = store.getBrands() %}
+    {% if marcas.items|length > 0 and marcas.showOnHomePage %}
+    <section id="marcas">
+        <div class="central">
+            <h2 class="titulo">MARCAS</h2>
+            
+            <div class="itens owl-carousel owl-theme">
+                {% for marca in marcas.items %}
+                <div class="item{% if not marca.logo %} no-img{% endif %}">
+                    <a href="{{ marca.marca_url }}">
+                        {% if marca.logo %}
+                        <img src="{{ marca.logo }}" alt="{{ marca.marca }}" />
+                        {% else %}
+                        <h6 class="marca">{{ marca.marca }}</h6>
+                        {% endif %}
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Widget Blog -->
+    {% set blog_posts = store.blogPosts() %}
+    {% if blog_posts|length >= 1 %}
+    <section class="blog-posts">
+        <div class="central">
+            <h2 class="titulo">NOVIDADES DO BLOG</h2>
+            
+            <div class="wrapper owl-carousel owl-theme">
+                {% for post in blog_posts %}
+                <div class="item">
+                    <a href="{{ post.blog_url }}/" target="_blank">
+                        <div class="foto">
+                            <img src="{{ post.imagem }}" alt="{{ post.titulo }}" class="img-fluid" />
+                        </div>
+                        <p class="t">{{ post.titulo }}</p>
+                    </a>
+                </div>
+                {% endfor %}
+                
+                <!-- Ver Mais -->
+                <div class="item">
+                    <a href="{{ global.textos_painel.blog_url }}" target="_blank" class="see_more">
+                        Ver mais posts
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Widget Instagram -->
+    {% set instagram = store.widgetInstagram() %}
+    {% if instagram.token %}
+    <section id="wid_instagram">
+        <h2 class="titulo">
+            <i class="ri-instagram-line"></i> {{ instagram.username }}
+        </h2>
+        <div id="instafeed"></div>
+    </section>
+    {% endif %}
+
+    <!-- Widget Vídeo -->
+    {% if global.video_home_url %}
+    <section class="video-wrapper">
+        <div class="central">
+            <video class="video__home" autoplay loop muted playsinline>
+                <source src="{{ global.video_home_url }}" type="video/mp4">
+            </video>
+            
+            {% if global.video_home_texto or global.video_home_botao_texto %}
+            <div class="overlay">
+                <div class="text">
+                    {% if global.video_home_texto %}
+                    <p>{{ global.video_home_texto }}</p>
+                    {% endif %}
+                    
+                    {% if global.video_home_botao_texto and global.video_home_botao_url %}
+                    <button onclick="location.href='{{ global.video_home_botao_url }}'">
+                        {{ global.video_home_botao_texto }}
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Produtos Visitados (posição 2) -->
+    {% if global.vitrine_visitados_posicao == '2' %}
+    <component data-modulo="produtos-visitados" loading="false" data-shimmer="4"></component>
+    {% endif %}
+
+    <!-- Banner de Publicidade - Rodapé -->
+    {% set bannerRodape = store.publicityBanner({tipo:'23', limit:'2'}) %}
+    {% if bannerRodape|length > 0 %}
+    <div class="banner-rodape">
+        <div class="central">
+            {% for banner in bannerRodape %}
+            {{ banner.raw|raw }}
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- SmartHint -->
+    {% if geral.hasSmartHint %}
+    <div id="smarthint-position-1"></div>
+    <div id="smarthint-position-2"></div>
+    <div id="smarthint-position-3"></div>
+    <div id="smarthint-position-4"></div>
+    <div id="smarthint-position-5"></div>
+    {% endif %}
+
+    <!-- PerformaAI -->
+    {% if geral.hasPerformaAI %}
+    <performa></performa>
+    {% endif %}
+</div>
+
+<!-- Scripts Específicos da Home -->
+<script>
+$(function() {
+    // Banner Principal
+    {% if slides.items|length > 1 %}
+    $('#home-slide').owlCarousel({
+        items: 1,
+        loop: true,
+        margin: 0,
+        nav: true,
+        dots: true,
+        autoplay: true,
+        autoplayTimeout: 6000,
+        autoplayHoverPause: true,
+        navText: [
+            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10.828 12l4.95 4.95-1.414 1.414L8 12l6.364-6.364 1.414 1.414z"/></svg>',
+            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.172 12l-4.95-4.95 1.414-1.414L16 12l-6.364 6.364-1.414-1.414z"/></svg>'
+        ],
+        onInitialized: function() {
+            // Inicia animação no primeiro dot
+            $('#home-slide .owl-dot.active').css('animation', 'progress 6s linear forwards');
+        },
+        onTranslate: function() {
+            // Reseta animação dos dots
+            $('#home-slide .owl-dot').css('animation', 'none');
+        },
+        onTranslated: function() {
+            // Inicia animação no dot ativo
+            $('#home-slide .owl-dot.active').css('animation', 'progress 6s linear forwards');
+        }
+    });
+    {% endif %}
+
+    // Banner Central
+    {% if bannersCentral|length > 3 %}
+    $('#banner-central .wrapper').owlCarousel({
+        loop: false,
+        margin: 20,
+        nav: true,
+        dots: false,
+        navText: [
+            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10.828 12l4.95 4.95-1.414 1.414L8 12l6.364-6.364 1.414 1.414z"/></svg>',
+            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.172 12l-4.95-4.95 1.414-1.414L16 12l-6.364 6.364-1.414-1.414z"/></svg>'
+        ],
+        responsive: {
+            0: {
+                items: 1
+            },
+            600: {
+                items: 2
+            },
+            1000: {
+                items: 3
+            }
+        }
+    });
+    {% endif %}
+
+    // Banner Personalizado
+    {% if bannersPersonalizados|length > 6 %}
+    $('#banner-personalizado .wrapper').owlCarousel({
+        loop: false,
+        margin: 10,
+        nav: true,
+        dots: false,
+        navText: [
+            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10.828 12l4.95 4.95-1.414 1.414L8 12l6.364-6.364 1.414 1.414z"/></svg>',
+            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.172 12l-4.95-4.95 1.414-1.414L16 12l-6.364 6.364-1.414-1.414z"/></svg>'
+        ],
+        responsive: {
+            0: {
+                items: 3
+            },
+            600: {
+                items: 4
+            },
+            1000: {
+                items: 6
+            }
+        }
+    });
+    {% endif %}
+
+    // Vitrines com Carrossel
+    $('.vitrine_h .owlCarousel').each(function() {
+        $(this).owlCarousel({
+            loop: false,
+            margin: 10,
+            nav: true,
+            dots: true,
+            navText: [
+                '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10.828 12l4.95 4.95-1.414 1.414L8 12l6.364-6.364 1.414 1.414z"/></svg>',
+                '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.172 12l-4.95-4.95 1.414-1.414L16 12l-6.364 6.364-1.414-1.414z"/></svg>'
+            ],
+            responsive: {
+                0: {
+                    items: 2
+                },
+                600: {
+                    items: 3
+                },
+                1000: {
+                    items: 4
+                }
+            }
+        });
+    });
+
+    // Widget Avaliações
+    {% if avaliacoes.items|length > 1 %}
+    $('#widget_avaliacoes .itens').owlCarousel({
+        loop: false,
+        margin: 15,
+        nav: true,
+        dots: false,
+        navText: [
+            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10.828 12l4.95 4.95-1.414 1.414L8 12l6.364-6.364 1.414 1.414z"/></svg>',
+            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.172 12l-4.95-4.95 1.414-1.414L16 12l-6.364 6.364-1.414-1.414z"/></svg>'
+        ],
+        responsive: {
+            0: {
+                items: 1
+            },
+            600: {
+                items: 2
+            },
+            800: {
+                items: 3
+            },
+            1000: {
+                items: 4
+            }
+        }
+    });
+    {% endif %}
+
+    // Widget Marcas
+    {% if marcas.items|length > 4 %}
+    $('#marcas .itens').owlCarousel({
+        loop: false,
+        margin: 15,
+        nav: true,
+        dots: false,
+        autoplay: true,
+        autoplayTimeout: 3000,
+        autoplayHoverPause: true,
+        navText: [
+            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10.828 12l4.95 4.95-1.414 1.414L8 12l6.364-6.364 1.414 1.414z"/></svg>',
+            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.172 12l-4.95-4.95 1.414-1.414L16 12l-6.364 6.364-1.414-1.414z"/></svg>'
+        ],
+        responsive: {
+            0: {
+                items: 2
+            },
+            600: {
+                items: 3
+            },
+            1000: {
+                items: 4
+            }
+        }
+    });
+    {% endif %}
+
+    // Widget Blog
+    {% if blog_posts|length > 1 %}
+    $('.blog-posts .wrapper').owlCarousel({
+        loop: false,
+        margin: 15,
+        nav: true,
+        dots: false,
+        navText: [
+            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10.828 12l4.95 4.95-1.414 1.414L8 12l6.364-6.364 1.414 1.414z"/></svg>',
+            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.172 12l-4.95-4.95 1.414-1.414L16 12l-6.364 6.364-1.414-1.414z"/></svg>'
+        ],
+        responsive: {
+            0: {
+                items: 1
+            },
+            600: {
+                items: 2
+            },
+            800: {
+                items: 3
+            },
+            1000: {
+                items: 4
+            }
+        }
+    });
+    {% endif %}
+
+    // Widget Instagram
+    {% if instagram.token %}
+    var userFeed = new Instafeed({
+        accessToken: '{{ instagram.token }}',
+        limit: parseInt('{{ instagram.limit }}'),
+        template: `
+            <div class="ig_wrapper">
+                <a href="{{link}}" rel="noreferrer" target="_blank">
+                    <img src="{{image}}" alt="Instagram" class="img-fluid" />
+                    <div class="ig_caption">{{caption}}</div>
+                </a>
+            </div>
+        `,
+        error: function(e) {
+            console.log(e);
+            $('#wid_instagram').remove();
+        }
+    });
+    userFeed.run();
+    {% endif %}
+
+    // SmartHint
+    {% if geral.hasSmartHint %}
+    SmartHint.Call('setPage', {type: 'home', data: {}});
+    {% endif %}
+});
+</script>

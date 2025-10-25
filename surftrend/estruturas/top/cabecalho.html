@@ -1,0 +1,301 @@
+{# ============================================
+   VANCOUVER TEMPLATE - TOPO
+   Template WBUY - Header Principal
+   ============================================ #}
+
+{# Barra Superior de Comunicação #}
+{% if global.textos_painel.topo_comunicacao %}
+<div class="header-communication">
+    <div class="container">
+        <p class="communication-text">{{ global.textos_painel.topo_comunicacao }}</p>
+    </div>
+</div>
+{% endif %}
+
+{# Header Principal #}
+<header class="header-main">
+    <div class="container">
+        <div class="header-content">
+            
+            {# Logo da Loja #}
+            <div class="header-logo">
+                <a href="{{ base }}/" title="{{ store.getStoreData().loja }}" aria-label="Página Inicial">
+                    {% set logo = store.getLogo() %}
+                    {% if logo %}
+                        <img src="{{ logo }}" alt="{{ store.getStoreData().loja }}" class="logo-image">
+                    {% else %}
+                        <span class="logo-text">VANCOUVER</span>
+                    {% endif %}
+                </a>
+            </div>
+
+            {# Campo de Busca #}
+            <div class="header-search">
+                <form action="{{ base }}/busca/" method="get" class="search-form">
+                    <input 
+                        type="search" 
+                        name="q" 
+                        placeholder="O que você está procurando?" 
+                        class="search-input"
+                        aria-label="Campo de busca"
+                        autocomplete="off"
+                    >
+                    <button type="submit" class="search-button" aria-label="Buscar">
+                        <i class="ri-search-line"></i>
+                    </button>
+                </form>
+            </div>
+
+            {# Ações do Header #}
+            <div class="header-actions">
+                
+                {# Minha Conta #}
+                <div class="header-account">
+                    {% set usuario = store.userStore() %}
+                    {% if usuario.logged %}
+                        <a href="{{ base }}/central/" class="account-link" title="Minha conta">
+                            <i class="ri-user-line"></i>
+                            <span class="account-text">
+                                <small>Olá, {{ usuario.data.nome|split(' ')[0] }}</small>
+                                <strong>Minha conta</strong>
+                            </span>
+                            <i class="ri-arrow-right-s-line"></i>
+                        </a>
+                    {% else %}
+                        {% if global.var_login_suspenso %}
+                            <a href="#" class="account-link mymodal" 
+                               data-include="inc.php?meio=modulos/login/inc_login" 
+                               data-title="Entrar" 
+                               data-width="420"
+                               title="Fazer login">
+                                <i class="ri-user-line"></i>
+                                <span class="account-text">
+                                    <small>Olá, faça seu</small>
+                                    <strong>Login</strong>
+                                </span>
+                                <i class="ri-arrow-right-s-line"></i>
+                            </a>
+                        {% else %}
+                            <a href="{{ base }}/login/" class="account-link" title="Fazer login">
+                                <i class="ri-user-line"></i>
+                                <span class="account-text">
+                                    <small>Olá, faça seu</small>
+                                    <strong>Login</strong>
+                                </span>
+                                <i class="ri-arrow-right-s-line"></i>
+                            </a>
+                        {% endif %}
+                    {% endif %}
+                </div>
+
+                {# Favoritos #}
+                {% if not global.var_mostruario %}
+                <div class="header-favorites">
+                    <a href="{{ base }}/central/favoritos/" class="favorites-link" title="Meus favoritos" aria-label="Favoritos">
+                        <i class="ri-heart-line"></i>
+                    </a>
+                </div>
+                {% endif %}
+
+                {# Carrinho de Compras #}
+                {% if not global.var_mostruario %}
+                <div class="header-cart">
+                    <a href="{{ base }}/carrinho/" class="cart-link{{ global.var_carrinho_suspenso ? ' cart-suspended' : '' }}" 
+                       title="Carrinho de compras" 
+                       aria-label="Carrinho">
+                        <i class="ri-shopping-bag-line"></i>
+                        <span class="cart-count">0</span>
+                    </a>
+                </div>
+                {% endif %}
+
+            </div>
+
+        </div>
+    </div>
+</header>
+
+{# Menu de Navegação Principal #}
+<nav class="header-nav">
+    <div class="container">
+        <div class="nav-content">
+            
+            {# Menu Mobile Toggle #}
+            <button class="nav-mobile-toggle" aria-label="Abrir menu" aria-expanded="false">
+                <i class="ri-menu-line"></i>
+            </button>
+
+            {# Menu Principal - Desktop #}
+            <ul class="nav-menu">
+                {% set categorias = store.categoriesMenu() %}
+                {% for categoria in categorias|slice(0, 8) %}
+                <li class="nav-item{{ categoria.subs|length > 0 ? ' has-submenu' : '' }}">
+                    <a href="{{ categoria.url }}" 
+                       class="nav-link" 
+                       {% if categoria.target %}target="{{ categoria.target }}"{% endif %}>
+                        {{ categoria.nome }}
+                        {% if categoria.subs|length > 0 %}
+                        <i class="ri-arrow-down-s-line"></i>
+                        {% endif %}
+                    </a>
+                    
+                    {# Submenu - Categorias Nível 2 e 3 #}
+                    {% if categoria.subs|length > 0 %}
+                    <div class="nav-submenu">
+                        <div class="container">
+                            <div class="submenu-grid">
+                                {% for level2 in categoria.subs %}
+                                <div class="submenu-column">
+                                    <a href="{{ level2.url }}" class="submenu-title">
+                                        {{ level2.nome }}
+                                    </a>
+                                    {% if level2.subs|length > 0 %}
+                                    <ul class="submenu-list">
+                                        {% for level3 in level2.subs %}
+                                        <li class="submenu-item">
+                                            <a href="{{ level3.url }}" class="submenu-link">
+                                                {{ level3.nome }}
+                                            </a>
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
+                                    {% endif %}
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </li>
+                {% endfor %}
+                
+                {# Links Institucionais #}
+                <li class="nav-item">
+                    <a href="{{ base }}/institucional/sobre-nos/" class="nav-link">Sobre nós</a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ base }}/institucional/nossas-lojas/" class="nav-link">Nossas lojas</a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ base }}/institucional/trocas-devolucoes/" class="nav-link">Trocas e devoluções</a>
+                </li>
+            </ul>
+
+        </div>
+    </div>
+</nav>
+
+{# Menu Mobile - Overlay #}
+<div class="nav-mobile-overlay">
+    <div class="nav-mobile-content">
+        
+        {# Header do Menu Mobile #}
+        <div class="nav-mobile-header">
+            <button class="nav-mobile-close" aria-label="Fechar menu">
+                <i class="ri-close-line"></i>
+            </button>
+        </div>
+
+        {# Menu Mobile - Conteúdo #}
+        <div class="nav-mobile-body">
+            
+            {# Informações do Usuário #}
+            <div class="nav-mobile-user">
+                {% set usuario = store.userStore() %}
+                {% if usuario.logged %}
+                    <a href="{{ base }}/central/" class="user-info">
+                        <i class="ri-user-line"></i>
+                        <span>Olá, {{ usuario.data.nome|split(' ')[0] }}</span>
+                    </a>
+                {% else %}
+                    <a href="{{ base }}/login/" class="user-info">
+                        <i class="ri-user-line"></i>
+                        <span>Fazer login</span>
+                    </a>
+                {% endif %}
+            </div>
+
+            {# Menu Mobile - Categorias #}
+            <ul class="nav-mobile-menu">
+                {% for categoria in categorias|slice(0, 8) %}
+                <li class="nav-mobile-item{{ categoria.subs|length > 0 ? ' has-submenu' : '' }}">
+                    <a href="{{ categoria.url }}" class="nav-mobile-link">
+                        {{ categoria.nome }}
+                        {% if categoria.subs|length > 0 %}
+                        <i class="ri-arrow-right-s-line"></i>
+                        {% endif %}
+                    </a>
+                    
+                    {# Submenu Mobile #}
+                    {% if categoria.subs|length > 0 %}
+                    <ul class="nav-mobile-submenu">
+                        {% for level2 in categoria.subs %}
+                        <li class="nav-mobile-subitem">
+                            <a href="{{ level2.url }}" class="nav-mobile-sublink">
+                                {{ level2.nome }}
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                </li>
+                {% endfor %}
+                
+                {# Links Institucionais Mobile #}
+                <li class="nav-mobile-item">
+                    <a href="{{ base }}/institucional/sobre-nos/" class="nav-mobile-link">Sobre nós</a>
+                </li>
+                <li class="nav-mobile-item">
+                    <a href="{{ base }}/institucional/nossas-lojas/" class="nav-mobile-link">Nossas lojas</a>
+                </li>
+                <li class="nav-mobile-item">
+                    <a href="{{ base }}/institucional/trocas-devolucoes/" class="nav-mobile-link">Trocas e devoluções</a>
+                </li>
+            </ul>
+
+        </div>
+
+    </div>
+</div>
+
+{# Carrinho Suspenso (se habilitado) #}
+{% if global.var_carrinho_suspenso %}
+<div class="suspended-cart">
+    <div class="cart-overlay"></div>
+    <div class="cart-content">
+        {# O conteúdo será carregado dinamicamente via JavaScript #}
+    </div>
+</div>
+{% endif %}
+
+{# Script para atualizar contador do carrinho dinamicamente #}
+<script>
+$(document).ready(function() {
+    // Atualizar contador do carrinho
+    function updateCartCount() {
+        $.post('action.php', {funcao: 'cart_info'}, function(data) {
+            if (data.success) {
+                $('.cart-count').text(data.total_items || 0);
+                if (data.total_items > 0) {
+                    $('.cart-count').addClass('has-items');
+                } else {
+                    $('.cart-count').removeClass('has-items');
+                }
+            }
+        }, 'json');
+    }
+    
+    // Atualizar ao carregar a página
+    updateCartCount();
+    
+    // Atualizar quando adicionar ao carrinho
+    readListener('onAddProductCart', function() {
+        updateCartCount();
+    });
+    
+    // Atualizar quando remover do carrinho
+    readListener('totalItensCarrinho', function() {
+        updateCartCount();
+    });
+});
+</script>

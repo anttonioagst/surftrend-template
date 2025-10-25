@@ -1,0 +1,262 @@
+{# ============================================
+   VANCOUVER TEMPLATE - RODAPÉ
+   Template WBUY - Footer Principal
+   ============================================ #}
+
+<footer class="footer-main">
+    
+    {# Newsletter #}
+    {% set newsletter = store.widgetNews() %}
+    {% if newsletter %}
+    <div class="footer-newsletter">
+        <div class="container">
+            <div class="newsletter-content">
+                <div class="newsletter-info">
+                    <h3 class="newsletter-title">{{ newsletter.title }}</h3>
+                    <p class="newsletter-subtitle">{{ newsletter.subtitle1 }}<br>{{ newsletter.subtitle2 }}</p>
+                </div>
+                <div class="newsletter-form">
+                    <form id="frmNewsletter" action="news_func.php" method="post" class="post-ajax">
+                        <div class="form-group">
+                            <input 
+                                type="email" 
+                                name="email" 
+                                class="form-input" 
+                                placeholder="Digite seu e-mail" 
+                                required
+                                aria-label="Digite seu e-mail para newsletter"
+                            >
+                            <button type="submit" class="form-button">
+                                <span class="button-text">Cadastrar</span>
+                                <i class="ri-arrow-right-line"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {# Conteúdo Principal do Rodapé #}
+    <div class="footer-content">
+        <div class="container">
+            <div class="footer-grid">
+                
+                {# Coluna 1 - Sobre a Loja #}
+                <div class="footer-column">
+                    <h4 class="footer-column-title">Sobre a {{ store.getStoreData().loja }}</h4>
+                    <div class="footer-about">
+                        {% set textoRodape = store.footerText() %}
+                        {% if textoRodape.rodape %}
+                            {{ textoRodape.rodape|raw }}
+                        {% else %}
+                            <p>{{ store.getStoreData().loja }} - Loja virtual de moda e estilo.</p>
+                        {% endif %}
+                    </div>
+                    
+                    {# Redes Sociais #}
+                    {% set redesSociais = store.socialIcons() %}
+                    {% if redesSociais.items|length > 0 %}
+                    <div class="footer-social">
+                        <p class="social-label">Siga-nos:</p>
+                        <div class="social-icons">
+                            {% for item in redesSociais.raw %}
+                                {{ item|raw }}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                {# Coluna 2 - Institucional #}
+                <div class="footer-column">
+                    <h4 class="footer-column-title">Institucional</h4>
+                    <ul class="footer-links">
+                        <li><a href="{{ base }}/institucional/sobre-nos/">Sobre nós</a></li>
+                        <li><a href="{{ base }}/institucional/nossas-lojas/">Nossas lojas</a></li>
+                        <li><a href="{{ base }}/fale-conosco/">Fale conosco</a></li>
+                        <li><a href="{{ base }}/trabalhe-conosco/">Trabalhe conosco</a></li>
+                    </ul>
+                </div>
+
+                {# Coluna 3 - Ajuda #}
+                <div class="footer-column">
+                    <h4 class="footer-column-title">Ajuda</h4>
+                    {% set paginasInfo = store.getInfoPages() %}
+                    <ul class="footer-links">
+                        {% for pagina in paginasInfo %}
+                            <li>{{ pagina|raw }}</li>
+                        {% endfor %}
+                        <li><a href="{{ base }}/institucional/trocas-devolucoes/">Trocas e devoluções</a></li>
+                        <li><a href="{{ base }}/institucional/politica-privacidade/">Política de privacidade</a></li>
+                    </ul>
+                </div>
+
+                {# Coluna 4 - Páginas Dinâmicas #}
+                {% set paginasDinamicas = store.getDynamicPages({menu: '1', local: ''}) %}
+                {% if paginasDinamicas|length > 0 %}
+                <div class="footer-column">
+                    <h4 class="footer-column-title">Páginas</h4>
+                    <ul class="footer-links">
+                        {% for pagina in paginasDinamicas|slice(0, 6) %}
+                            <li>{{ pagina|raw }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+
+                {# Coluna 5 - Contato #}
+                <div class="footer-column">
+                    <h4 class="footer-column-title">Contato</h4>
+                    {% set dados = store.getStoreData() %}
+                    <ul class="footer-contact">
+                        {% if dados.telefone %}
+                        <li>
+                            <i class="ri-phone-line"></i>
+                            <a href="tel:{{ dados.telefone|replace({' ': '', '-': '', '(': '', ')': ''}) }}">
+                                {{ dados.telefone }}
+                            </a>
+                        </li>
+                        {% endif %}
+                        
+                        {% if dados.celular %}
+                        <li>
+                            <i class="ri-smartphone-line"></i>
+                            <a href="tel:{{ dados.celular|replace({' ': '', '-': '', '(': '', ')': ''}) }}">
+                                {{ dados.celular }}
+                            </a>
+                        </li>
+                        {% endif %}
+                        
+                        {% if dados.cidade and dados.uf %}
+                        <li>
+                            <i class="ri-map-pin-line"></i>
+                            <span>{{ dados.cidade }}/{{ dados.uf }}</span>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    {# Formas de Pagamento e Selos #}
+    <div class="footer-trust">
+        <div class="container">
+            <div class="trust-grid">
+                
+                {# Formas de Pagamento #}
+                {% set pagamentos = store.paymentBrand() %}
+                {% if pagamentos.brand|length > 0 %}
+                <div class="trust-section">
+                    <h5 class="trust-title">Formas de pagamento</h5>
+                    <div class="payment-brands">
+                        {% for brand in pagamentos.brand %}
+                        <div class="payment-item" title="{{ brand.nome }}">
+                            <img src="{{ brand.icone }}" alt="{{ brand.nome }}" loading="lazy">
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                {# Selos de Segurança #}
+                {% set selos = store.securitySeal() %}
+                {% if selos|length > 0 %}
+                <div class="trust-section">
+                    <h5 class="trust-title">Segurança e certificados</h5>
+                    <div class="security-seals">
+                        {% for selo in selos %}
+                        <div class="seal-item">
+                            {{ selo|raw }}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+
+    {# Copyright e Informações Legais #}
+    <div class="footer-bottom">
+        <div class="container">
+            <div class="bottom-content">
+                
+                {# Copyright #}
+                <div class="copyright">
+                    <p>
+                        © {{ "now"|date("Y") }} {{ store.getStoreData().loja }} - 
+                        {% if store.getStoreData().doc1 %}
+                            CNPJ: {{ store.getStoreData().doc1 }}
+                        {% endif %}
+                    </p>
+                    <p class="copyright-small">
+                        Todos os direitos reservados. 
+                        {% if store.getStoreData().endereco and store.getStoreData().cidade %}
+                            {{ store.getStoreData().endereco }}, {{ store.getStoreData().endnum }} - 
+                            {{ store.getStoreData().cidade }}/{{ store.getStoreData().uf }}
+                            {% if store.getStoreData().cep %}
+                                - CEP: {{ store.getStoreData().cep }}
+                            {% endif %}
+                        {% endif %}
+                    </p>
+                </div>
+
+                {# Logo WBUY #}
+                <div class="powered-by">
+                    <p>Plataforma</p>
+                    <a href="https://www.wbuy.com.br" target="_blank" rel="noopener noreferrer" title="Plataforma WBUY">
+                        <img src="https://sistema.wbuy.com.br/assets/logo-wbuy-branco.svg" alt="WBUY" height="20">
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</footer>
+
+{# Script para Newsletter #}
+<script>
+$(document).ready(function() {
+    $('#frmNewsletter').on('submit', function(e) {
+        e.preventDefault();
+        
+        var $form = $(this);
+        var $button = $form.find('button[type="submit"]');
+        var $input = $form.find('input[name="email"]');
+        var email = $input.val();
+        
+        // Validação básica
+        if (!email || !email.includes('@')) {
+            alert('Por favor, digite um e-mail válido.');
+            return false;
+        }
+        
+        // Desabilitar botão durante envio
+        $button.prop('disabled', true).addClass('loading');
+        
+        // Enviar formulário
+        $.post($form.attr('action'), $form.serialize(), function(response) {
+            if (response.success || response.status === 'success') {
+                alert('E-mail cadastrado com sucesso! Obrigado por se inscrever.');
+                $input.val('');
+            } else {
+                alert(response.message || 'Erro ao cadastrar e-mail. Tente novamente.');
+            }
+        }, 'json')
+        .fail(function() {
+            alert('Erro ao processar sua solicitação. Tente novamente mais tarde.');
+        })
+        .always(function() {
+            $button.prop('disabled', false).removeClass('loading');
+        });
+        
+        return false;
+    });
+});
+</script>
