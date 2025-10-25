@@ -1,0 +1,78 @@
+Cache - Recursos gerais
+Neste seção apresentamos um exemplo funcional de como você poderá fazer com que seu tema funcione corretamente junto com a utilização do cache total da plataforma.
+
+Por padrão, a plataforma wBuy faz cache da seguinte forma:
+- Para subdominios em testes que tenham em sua URL o endereço .wbuy.com.br, o cache é de 1 minuto;
+- Para domínios finais, o cache é de 5 minutos.
+
+Para que seu tema esteja dentro dos padrões para aceitar o cache da plataforma e/ou de terceiros, é necessário se atentar ao seguinte:
+- Os dados do usuário logado e do carrinho (quantidade de itens ou valor total) precisam ser recuperados de forma assíncrona e suas chamadas não devem ser fixadas diretamente no HTML.
+
+Geralmente estes dados são carregados no topo da loja (recomendado), mas se necessário você poderá fazer em outras partes do código também.
+
+Para que as chamadas aconteçam corretamente, disponibilizamos abaixo exemplos funcionais que você poderá utilizar para seu tema.
+
+Estas entradas podem ser adicionadas no topo de seu tema.
+
+Neste bloco de código, há a validação sobre a utilização ou não da loja em modo mostruário. Há também entradas para os dados do usuário em .load-action-login, botão para os favoritos (opcional) e o código preparado para receber os dados do carrinho em .cart-header-total-items e .cart-header-total-amount.
+
+{% if not var_mostruario %}
+    <div class="login load-action-login"><a href="central/"><i class="ri-user-3-line"></i></a></div>
+    <div class="fav">
+        <a href="central/favoritos/" aria-label="Favoritos"><i class="ri-heart-line"></i></a>
+    </div>
+    <div class="shopcart{{ global.var_carrinho_suspenso ? ' suspended' : '' }}">
+        <a href="carrinho/" class="cart">
+            <i class="ri-shopping-cart-line"></i>
+            <span class="cart-header-total-items">0</span>
+            <span class="cart-header-total-amount">R$0,00</span>
+        </a>
+    </div>
+{% elseif var_mostruario and not var_bloquear_cadastros %}
+    <div class="login load-mostruario-login"></div>
+{% endif %}
+Após sua tag header do topo, adicione o seguinte trecho de código:
+
+{% if global.var_carrinho_suspenso %}
+	<div class="suspended-cart">
+		<div class="cover"></div>
+		<div class="content"></div>
+	</div>
+{% endif %}
+Este código é responsável por adicionar o carrinho suspenso quando habilitado pelo lojista na plataforma.
+
+Por padrão a plataforma já busca e disponibiliza os dados de carrinho para todos os temas (padrão ou não) e os disponibiliza conforme modelos apresentados anteriormente. Caso seja necessário, você pode chamar seu widget personalizado do carrinho suspenso com base no seguinte código:
+
+$.post('load-widget.php', {widget:'widgets/suspended-cart.html'}, function(d){
+    $('.suspended-cart .content').html(d);
+});
+O código acima faz uma chamada para seu widget personalizado de nome suspended-cart.html. Você precisa ter este arquivo criado em sua árvore de widgets para que funcione corretamente. Para mais informações de como chamar o carrinho abandonado e criar o widget, siga este documento.
+
+Este código Javascript/Twig abaixo deve ser adicionado no seu topo para buscar dados do usuário logado (ou não):
+
+$.post('action.php', {funcao:'userdata'}, function(d){
+    let html = '';
+    {% if not var_mostruario %}
+        if(d.logged !== '1'){
+            {% if global.var_login_suspenso %}
+                let modal_login_title = '{{ global.textos_painel.modal_login_titulo ?: "'Entrar'" }}';
+                html = '<a href="#" class="mymodal" data-include="inc.php?meio=modulos/login/inc_login" data-title="'+modal_login_title+'" data-width="420"><i class="ri-user-line"></i><p>olá, faça seu login<br>ou cadastre-se</p></a>';
+            {% else %}
+                html = '<a href="login/"><i class="ri-user-line"></i><p>olá, faça seu login<br>ou cadastre-se</p></a>';
+            {% endif %}
+        }else{
+            html = '<a href="central/"><i class="ri-user-line"></i><p>olá, '+d.data.primeiro_nome+'<br><strong>minha conta</strong></p></a>';
+        }
+        $('.load-action-login').html(html);
+    {% elseif var_mostruario and not var_bloquear_cadastros %}
+        if(d.logged !== '1'){
+            html = '<a href="login/"><i class="ri-user-line"></i></a>';
+        }else{
+            html = '<a href="central/"><i class="ri-user-line"></i></a>';
+        }
+        $('.load-mostruario-login').html(html);
+    {% endif %}
+}, 'json');
+Atenção à saida dos dados. No exemplo acima temos a saída de duas formas, uma para quando a loja não tem habilitada a opção de mostruário $('.load-action-login').html(html); e também quando a loja desabilita a venda e trabalha apenas como mostruário, então a saída vai para $('.load-mostruario-login').html(html); As classes mostradas são opcionais e você pode nomeá-las como desejar.
+
+Caso haja alguma dúvida na implementação, conte conosco para lhe auxiliar.

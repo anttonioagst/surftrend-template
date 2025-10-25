@@ -1,0 +1,36 @@
+geral.hasOpolen
+Recurso responsável por mostrar as instituições participantes do programa O Pólen quando o lojista tem contato com eles. Exclusivamente deve ser mostrado na página de detalhes do produto.
+
+{% if geral.hasOpolen %}
+	<opolen></opolen>
+{% endif %}
+
+geral.hasPerformaAI
+Recurso responsável por mostrar vitrines dinâmicas do serviço PerformaAI quando o lojista tem contrato com eles. 
+
+# vitrines
+{% if geral.hasPerformaAI %}
+	<performa></performa>
+{% endif %}
+
+
+geral.hasSmartHint
+ Recurso do serviço SmartHint responsável por administrar vitrines dinâmicas na loja virtual caso o lojista tenha contrato ativo com eles.
+
+# vitrines
+{% if geral.hasSmartHint %}
+	<div id="smarthint-position-1"></div>
+	<div id="smarthint-position-2"></div>
+	<div id="smarthint-position-3"></div>
+	<div id="smarthint-position-4"></div>
+	<div id="smarthint-position-5"></div>
+{% endif %}
+// js responsável pela funcionalidade das vitrines
+// na variável "type", você deve informar a qual página está sendo inserido o códido
+{% if geral.hasSmartHint %}
+	<script>
+	$(function(){
+		SmartHint.Call('setPage',{type:'home', data: {} });
+	});
+	</script>
+{% endif %}

@@ -1,0 +1,283 @@
+Detalhes do produto
+Página responsável por mostrar os detalhes do produto e sequencialmente adicioná-lo ao carrinho.
+
+# obtendo informações do produto em questão
+
+# instanciar o produto
+{% set produto = store.productDetail(productId) %}
+O parâmetro productId é obrigatório para a consulta dos dados do produto.
+
+Para obter o ID do produto (productId) a partir da rota (URL), utilize a variável extra.id, exemplo: store.productDetail(extra.id)
+
+IMPORTANTE!
+
+Para incluir a parte dinâmica do produto, ou seja, onde aparecem o preço, quantidade, botão de adicionar ao carrinho e demais, você tem 02 opções.
+
+- Na primeira você pode usar o modelo padrão wBuy, ao qual irá carregar dinamicamente o conteúdo sem a possibilidade de personalização do HTML.
+- Na segunda opção você poderá adicionar os blocos disponíveis, respeitando a regra pré-estabelecida e descrita abaixo.
+
+ 
+
+Opção 1 - Modelo dinâmico padrão wBuy
+
+# copie e cole onde deseja que o conteúdo dinâmico apareça em seu template
+{{ dynamic_include|raw }}
+O resultado será parecido um dos modelos abaixo, dependendo se está ativa a grade ou não na loja virtual:
+
+
+	
+ 
+
+Opção 2 - Modelo dinâmico personalizado
+
+# exemplo de utilização
+# insira onde deseja que o conteúdo dinâmico apareça em seu template
+{% set sku = extra.sku ? extra.sku : produto.sku %} // define o sku que deverá inicializar
+# faça um include do seu widget dentro de uma div#inc_sku
+<div id="inc_sku">
+	{{ include('caminho-do-seu-widget.html') }}
+</div>
+O seu widget de inclusão deverá ser construído seguindo as instruções e parâmetros encontrados aqui, em html.productDetailSKU(sku).
+
+ 
+
+# includes padrões
+
+Para resgatar os últimos 03 comentários ativos do produto usando o widget padrão, chame-o com o seguinte trecho:
+
+{{ include('includes/product_comments.html') }}
+Abaixo segue o conteúdo padrão do widget product_comments.html. Caso deseje alterar o conteúdo do include padrão, crie um novo widget com o conteúdo desejado e chame-o no lugar. Você também pode utilizar a documentação do método store.getCommentsProduct(productId) para encontrar seus comentários.
+
+{% set comentarios = store.getCommentsProduct(extra.id) %}
+<h2 class="t">AVALIAÇÕES ({{ comentarios.total }})</h2>
+{% if comentarios.total == 0 %}
+<div class="block margin-bottom text-center">
+    <p class="text-warning">Você conhece este produto?<br>O que pode nos contar sobre ele?</p>
+</div>
+{% else %}
+<div class="itens">
+    {% for comentario in comentarios.items %}
+    <div class="item">
+        <div class="h">
+            <span>{{ comentario.nome }} - {{ comentario.data|date('d/m/Y') }}</span>
+            <div class="rat">
+                {{ comentario.estrelas|raw }}
+            </div>
+        </div>
+        {% if comentario.comentario %}
+        <p class="c">{{ comentario.comentario }}</p>
+        {% endif %}
+    </div>
+    {% endfor %}
+    <div itemprop="review" itemtype="http://schema.org/Review" itemscope>
+        <div itemprop="author" itemtype="http://schema.org/Person" itemscope>
+            <meta itemprop="name" content="{{ comentarios.items[0].nome }}" />
+        </div>
+        <div itemprop="reviewRating" itemtype="http://schema.org/Rating" itemscope>
+            <meta itemprop="ratingValue" content="{{ comentarios.items[0].voto }}" />
+            <meta itemprop="bestRating" content="{{ comentarios.items[0].voto }}" />
+        </div>
+    </div>
+</div>
+{% endif %}
+{% if comentarios.items|length >= 1 %}
+<a href="#" class="b mymodal" data-include="inc.php?meio=produtos_det_comentarios&id={{ extra.id }}" data-title="Avaliações"><i class="fa fa-list-alt"></i> ver todas avaliações</a>
+{% endif %}
+<a href="#" class="b mymodal{{ comentarios.items|length == 0 ? ' block' : '' }}" data-include="inc.php?meio=produtos_det_comentar&id={{ extra.id }}" data-width="400" data-title="Avaliar"><i class="fa fa-pencil"></i> deixe sua avaliação</a>
+
+Para incluir os botões de compartilhamento do produto, adicione o seguinte trecho:
+
+<div class="row">
+	<div class="col">
+		<p class="text-muted mb-1">Compartilhe</p>
+		{{ include('includes/share.html') }}
+	</div>
+</div>
+
+# session / produtos curtidos
+
+Através do método store.getSession() você conseguirá obter todos os produtos que foram curtidos pelo usuário na sessão atual, evitando assim que ele possa curtir novamente o produto. Exemplo:
+
+{% set session = store.getSession() %}
+{% if extra.id not in session.curtidos %}
+<a href="" class="btn btn-light curtir"><i class="fa fa-fw fa-heart-o text-danger"></i> Curtir</a>
+{% else %}
+<span class="btn btn-light disabled"><i class="fa fa-fw fa-heart text-success"></i> Curtiu!</span>
+{% endif %}
+ 
+
+# avaliações TrustVox (quando disponível na loja virtual)
+
+# estrelas de votação
+{% trustvoxStars = html.trustvoxProductStars(produtoId) %}
+# bloco de avaliações
+{% trustvoxRating = html.trustvoxProductRating() %}
+ 
+
+# variáveis disponíveis através de store.productDetail(productId)
+
+Todas variáveis disponíveis encontra-se aqui: store.productDetail(produto_id)
+
+Aqui você encontra um modelo completo padrão da página de detalhes do produto: Página de detalhes do produto
+
+Página da Vitrine Personalizada
+Página responsável por mostrar produtos de uma vitrine personalizada (Painel de controle > Marketing > Vitrine personalizada).
+
+Para resgatar os dados desta página você deve armazenar a variável fixa page_custom_showcase e trabalhar encima do retorno dos dados.
+
+# exemplo
+{% set dados = page_custom_showcase %}
+ 
+
+ Os parâmetros disponíveis na variável page_custom_showcase são os mesmos encontrados em store.pageProducts() com adição da variável page, que contém os seguintes dados:
+
+page.title string - Título recomendado da página
+
+vitrine array - Dados da vitrine
+
+vitrine.nome string
+
+vitrine.vitrine_url string
+
+page.infotexto string - Texto informativo da página. Disponível para categoria de nível 1
+
+page.hasMenuLateral boolean - Se true, existem opções a serem exibidas para filtragem e deve-se mostrá-las.
+
+page.mobile.coluna_dupla boolean - Se true, os produtos exibidos devem ser mostrados em 2 colunas por linha.
+
+page.banner_raw html - HTML dos banners desktop e mobile da vitrine.
+
+Página de busca
+Página responsável por mostrar produtos retornados em uma busca na loja virtual.
+
+Para resgatar os dados desta página você deve armazenar a variável fixa page_search e trabalhar encima do retorno dos dados.
+
+# exemplo
+{% set dados = page_search %}
+ 
+
+ Os parâmetros disponíveis na variável page_search são os mesmos encontrados em store.pageProducts() com adição da variável page, que contém os seguintes dados:
+
+page.title string - Termo que foi usado na busca
+
+page.hasMenuLateral boolean - Se true, existem opções a serem exibidas para filtragem e deve-se mostrá-las.
+
+page.mobile.coluna_dupla boolean - Se true, os produtos exibidos devem ser mostrados em 2 colunas por linha.
+
+Página de categorias
+Página responsável por mostrar produtos de uma determinada categoria de nivel 1, de nível 2 e de nivel 3.
+
+Para resgatar os dados desta página você deve armazenar a variável fixa page_category e trabalhar encima do retorno dos dados.
+
+# exemplo
+{% set dados = page_category %}
+ 
+
+ Os parâmetros disponíveis na variável page_category são os mesmos encontrados em store.pageProducts() com adição da variável page, que contém os seguintes dados:
+
+page.title string - Título recomendado da página
+
+page.cl1 array - Informações da categoria de nível 1 selecionada
+
+page.cl1.id int
+
+page.cl1.nome string
+
+page.cl1.url string
+
+page.cl1.ordenar string
+
+page.cl2 array - Informações da categoria de nível 2 (quando) selecionada
+
+page.cl2.id int
+
+page.cl2.nome string
+
+page.cl2.url string
+
+page.cl3 array - Informações da categoria de nível 3 (quando) selecionada
+
+page.cl3.id int
+
+page.cl3.nome string
+
+page.cl3.url string
+
+page.infotexto string - Texto informativo da página. Disponível para categoria de nível 1
+
+page.banner string - URL do banner de exibição na página. Disponível para categoria de nível 1
+
+page.banner_link string - URL de acesso para o banner de exibição na página. Disponível para categoria de nível 1
+
+page.banner_raw string raw <img> - Banner pronto para ser inserido no template
+
+page.hasMenuLateral boolean - Se true, existem opções a serem exibidas para filtragem e deve-se mostrá-las.
+
+page.seo_scripts string
+
+page.mobile.coluna_dupla boolean - Se true, os produtos exibidos devem ser mostrados em 2 colunas por linha.
+
+Página de produtos de uma Filial (Multiloja)
+Página responsável por mostrar produtos de uma determinada filial ligada à matriz.
+
+Para resgatar os dados desta página você deve armazenar a variável fixa page_filial e trabalhar encima do retorno dos dados.
+
+# exemplo
+{% set dados = page_filial %}
+ 
+
+ Os parâmetros disponíveis na variável page_filial são os mesmos encontrados em store.pageProducts() com adição da variável page, que contém os seguintes dados (importantes):
+
+page.title string - Título recomendado da página
+
+page.filial array - Detalhes da filial em questão
+
+page.filial.logo string 
+
+page.filial.banner string
+
+page.filial.banner_mobile string 
+
+page.filial.nome string
+
+page.filial.cidade string
+
+page.filial.uf string
+
+page.filial.url string - URL do site da Matriz dentro da wBuy
+
+page.filial.url_interna_matriz string - URL da página da filial dentro da loja matriz
+
+page.hasMenuLateral boolean - Se true, existem opções a serem exibidas para filtragem e deve-se mostrá-las.
+
+page.mobile.coluna_dupla boolean - Se true, os produtos exibidos devem ser mostrados em 2 colunas por linha.
+
+Página de produtos de uma Marca
+Página responsável por mostrar produtos de uma determinada marca.
+
+Para resgatar os dados desta página você deve armazenar a variável fixa page_brand e trabalhar encima do retorno dos dados.
+
+# exemplo
+{% set dados = page_brand %}
+ 
+
+ Os parâmetros disponíveis na variável page_brand são os mesmos encontrados em store.pageProducts() com adição da variável page, que contém os seguintes dados:
+
+page.title string - Título recomendado da página
+
+page.marca array - Detalhes da marca em questão
+
+page.marca.nome string
+
+page.marca.marca_url string
+
+page.marca.logo_url string
+
+page.hasMenuLateral boolean - Se true, existem opções a serem exibidas para filtragem e deve-se mostrá-las.
+
+page.mobile.coluna_dupla boolean - Se true, os produtos exibidos devem ser mostrados em 2 colunas por linha.
+
+Páginas customizadas
+Você pode criar páginas personalizadas cujo conteúdo seja editável apenas pelo tema.
+
+Para isso, acesse o painel de edição do tema e vá em Novo > Nova Página Customizada. Nessa seção, você poderá definir o nome da nova página e a URL correspondente. Certifique-se de não utilizar uma URL já existente, como a de uma categoria ou produto, para evitar conflitos.

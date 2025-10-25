@@ -1,0 +1,489 @@
+Agrupador de produtos
+Este recurso é responsável por retornar todos os produtos relacionados e linkados através do módulo Upsell e cross-sell > Agrupador de produtos.
+
+Adicione o bloco de código abaixo ao seu tema, especificamente na tela de detalhes do produto.
+
+<component data-modulo="product-grouper" loading="false" data-pid="{{ produto.id }}"></component>
+É necessário informar o id do produto da tela atual para que seja buscado os produtos relacionados entre sí, ao qual grupo este faz parte.
+
+html.buyTogether(produtoId)
+Este recurso permite mostrar o bloco Compre Junto na página de detalhes de um produto quando este tem configurado na plataforma.
+
+Necessário informar o ID do produto que está sendo visualizado para retornar os dados de seu Compre Junto. 
+
+# utilização
+{% set compreJunto = html.buyTogether(produto_id) %}
+# para mostrar no código
+{{ compreJunto }}
+
+html.productDetailSKU
+Disponibiliza como retorno os elementos HTML dos dados dinâmicos da página de detalhes do produto.
+
+# obrigatoriamente passe como parâmetro o sku recebido na tela-pai desta (detalhes do produto)
+{% set html = html.productDetailSKU(sku) %}
+# exemplo de uso
+{% set html = html.productDetailSKU(sku) %}
+
+{%
+	set setTagsEcommerceProductDetail = store.setTagsEcommerceProductDetail({
+		sku: sku,
+		name: html.matriz.produto,
+		quantity: 1,
+		price: html.matriz.valor_cliente.valor,
+	})
+%}
+
+<div id="produto-sku" data-sku="{{ sku }}" data-widget="produto-sku-html.html" data-loadingwhenchange="true">
+	{{ html.googletags }}
+    {{ html.pontoswb }}
+	{{ html.valor }}
+	{{ html.desconto }}
+	{{ html.compra_minima }}
+	{{ html.parcelamento }}
+	{{ html.contador_regressivo }}
+	{{ html.disponibilidade }}
+	{{ html.valor_atacado }}
+	{{ html.ultimas_unidades }}
+	{{ html.frete_gratis }}
+	{{ html.tabela_medidas }}
+    {{ html.info_assinatura }}
+
+	<div class="estoque">
+		{{ html.grade }}
+		{{ html.campos_adicionais }}
+	</div>
+
+	<div class="botoes">
+		{{ html.botao_carrinho }}
+		{{ html.calculo_frete }}
+	</div>
+</div>
+
+<script>
+	var _cor_id = '{{ html.matriz.cor.id }}';
+	$(function(){
+		if(productPhotosColorSelected != _cor_id){
+			mobileLoadPhotosByColor(_cor_id);
+			productLoadPhotosByColor({
+				cor_id: _cor_id,
+				tipo_fotos: '{{ html.matriz.tipo_fotos }}',
+			});
+			productPhotosColorSelected = _cor_id;
+		}
+
+		{% if html.matriz.grade_tipo == 'grid' %}
+		$('#geral, #mymodal').on('click', '.grade .l .cor .item', function(){
+			let _th = $(this);
+			let color = _th.data('cor');
+			productLoadPhotosByColor({
+				cor_id: color,
+				tipo_fotos: '{{ html.matriz.tipo_fotos }}',
+			});
+			mobileLoadPhotosByColor(color);
+		});
+		{% endif %}
+	});
+</script>
+
+{{ setTagsEcommerceProductDetail }}
+ 
+
+ATENÇÃO
+Obrigatoriamente coloque suas variáveis dinâmicas dentro de um div#produto-sku, caso contrário não irá funcionar os elementos em Javascript pré-programados.
+
+A div#produto-sku recebe como parâmetros os seguintes campos (veja no exemplo acima):
+
+data-sku string Obrigatório - O SKU do produto setado na tela-pai desta (detalhes do produto)
+
+data-widget string Obrigatório - Nome do seu widget dinâmico na árvore de widgets, exemplo: produtos-detalhes-sku.html
+
+data-loadingwhenchange string bool - Informe true para que mostre um pequeno informativo de carregamento (loading) sob o widget, indicando ao consumidor que está sendo processado. Informe false para desabilitar. Padrão: false
+
+# retorno dos dados
+ 
+googletags string raw - <div> com tags montadas preparadas para o Google Retargeting. Não se esqueça de fazer o Retargeting na tela-pai desta.
+
+pontoswb string raw - <div.clube-info-pontos> com informações dos pontos que o comprador ganhará na compra do produto caso o aplicativo Fidelização esteja ativo
+
+valor string raw - <div.valores> com informações do valor do produto em questão
+
+valor_atacado string raw - <div.valor_atacado> com informações do valor de atacado quando existente
+
+desconto string raw - <p.desconto> quando existente, mostra informações do desconto disponível
+
+compra_minima string raw - <p.compra_minima> quando existente, mostra informações de quantidade mínima para compra do SKU
+
+parcelamento string raw - <div.parcelas> quando existente, mostra por linha os parcelamentos disponíveis para o SKU com base no valor de venda
+
+contador_regressivo string raw - <div.countdown> mostra quando um produto estiver em promoção e a opção de mostrar contador regressivo está habilitada
+
+disponibilidade string raw - <p.disponibilidade> mostra o prazo de disponibilidade do produto
+
+ultimas_unidades string raw - <p.ultimas_unidades> mostra quanto habilitado e o SKU tiver 5 ou menos itens disponíveis
+
+frete_gratis string raw - <p.frete_gratis> quando existente, mostra o informativo: FRETE GRÁTIS
+
+grade string raw - <div> monta e mostra a grade disponível para o produto conforme a configuração da loja e tipo de grade
+
+campos_adicionais string raw - <div.campos_adicionais> quando existente, mostra campos adicionais que o consumidor deve selecionar antes de adicionar o produto no carrinho
+
+botao_carrinho string raw - <div.row-botao-carrinho> quando disponível, permite que o consumir adicione o SKU ao carrinho
+
+calculo_frete string raw - <div#calculo_frete> carrega o script responsável pelo cálculo de frete para o SKU selecionado
+
+tabela_medidas string raw - <button.tabela_medidas> ao ser clicado abre um modal com informações da tabela de medidas definida
+
+matriz array - Todos os dados contidos na matriz
+
+matriz.id int - ID do SKU
+
+matriz.sku string
+
+matriz.quantidade_em_estoque int - Quantidade atual em estoque da variação selecionada
+
+matriz.frete array
+
+matriz.frete.comprimento double
+
+matriz.frete.largura double
+
+matriz.frete.altura double
+
+matriz.frete.peso double
+
+matriz.frete.gratis boolean
+
+matriz.frete.base_calculo double - Valor base de cálculo para frete
+
+matriz.frete.permite_calculo boolean - Se true, permite mostrar o formulário de cálculo do frete
+
+matriz.prazo_producao int - Prazo de produtoção/disponibilizade do produto em dias úteis
+
+matriz.produto_url string
+
+matriz.desonto_mostra_valor boolean - Caso true, deve mostrar o valor do desconto em reais e não em porcentagem
+
+matriz.mostra_prazo_producao boolean - Caso true, deve mostrar o prazo de produção do produto
+
+matriz.parcelamento_list array - Lista dos métodos de parcelamento
+
+matriz.parcelamento_list.tipo string
+
+matriz.parcelamento_list.boleto boolean - Se true, este gateway está configurado para receber por boleto
+
+matriz.parcelamento_list.parcelas int - Quantidade de parcelas possíveis para pagamento
+
+matriz.parcelamento_list.valor_parcela double - Valor de cada parcela
+
+matriz.parcelamento_list.has_juros boolean - Se true, o valor_parcela está calculado com juros
+
+matriz.parcelamento_list.perc_desconto double - Percentual de desconto quando existente.
+
+matriz.link_externo string - Link externo do produto. Caso existente, deve ser respeitado e não deve-se adicionar o produto ao carrinho, pois a compra é feita externamente
+
+matriz.mostra_seletor_quantidade boolean - Caso true, deve mostrar o input de quantidade de produtos a ser adicionado no carrinho
+
+matriz.mostra_variacoes_titulo boolean - Caso true, deve-se mostrar o nome das variações (Cor e Tamanho) no título do produto ao navegar entre os SKUs
+
+matriz.produto_url string
+
+matriz.redireciona_ao_carrinho boolean - Caso true, ao clicar no botão de adicionar ao carrinho, deve-se redirecionar o consumidor imediatamente para /carrinho
+
+matriz.controla_estoque boolean - Caso true, a loja controla a venda por quantidade em estoque
+
+matriz.permite_cotacao boolean - Caso true, deve-se mostrar o botão e formulário para que seja possível solicitar uma cotação do produto
+
+matriz.permite_aviseme boolean - Caso true, deve-se mostrar o botão de avise-me
+
+matriz.mostra_contador_regressivo boolean - Caso true, deve-se mostrar o contador regressivo para o término de uma promoção quando existente
+
+matriz.mostra_ultimas_unidades boolean - Caso true, deve-se mostrar o informativo de últimas unidades disponíveis (geralmente informando a quantidade de estoque disponível)
+
+matriz.tabela_medidas int - ID da tabela de medidas
+
+matriz.grade_tipo int - ID do tipo de grade do produto
+
+matriz.mostrar_valor_apartir boolean - Caso true, deve-se mostrar a mensagem de "à partir" antes do valor principal
+
+matriz.sob_consulta boolean
+
+matriz.produto_esgotado boolean
+
+matriz.caracteristicas string - Texto cadastrado sobre as caracteristicas do produto
+
+html.productDetailSKU
+Disponibiliza como retorno os elementos HTML dos dados dinâmicos da página de detalhes do produto.
+
+# obrigatoriamente passe como parâmetro o sku recebido na tela-pai desta (detalhes do produto)
+{% set html = html.productDetailSKU(sku) %}
+# exemplo de uso
+{% set html = html.productDetailSKU(sku) %}
+
+{%
+	set setTagsEcommerceProductDetail = store.setTagsEcommerceProductDetail({
+		sku: sku,
+		name: html.matriz.produto,
+		quantity: 1,
+		price: html.matriz.valor_cliente.valor,
+	})
+%}
+
+<div id="produto-sku" data-sku="{{ sku }}" data-widget="produto-sku-html.html" data-loadingwhenchange="true">
+	{{ html.googletags }}
+    {{ html.pontoswb }}
+	{{ html.valor }}
+	{{ html.desconto }}
+	{{ html.compra_minima }}
+	{{ html.parcelamento }}
+	{{ html.contador_regressivo }}
+	{{ html.disponibilidade }}
+	{{ html.valor_atacado }}
+	{{ html.ultimas_unidades }}
+	{{ html.frete_gratis }}
+	{{ html.tabela_medidas }}
+    {{ html.info_assinatura }}
+
+	<div class="estoque">
+		{{ html.grade }}
+		{{ html.campos_adicionais }}
+	</div>
+
+	<div class="botoes">
+		{{ html.botao_carrinho }}
+		{{ html.calculo_frete }}
+	</div>
+</div>
+
+<script>
+	var _cor_id = '{{ html.matriz.cor.id }}';
+	$(function(){
+		if(productPhotosColorSelected != _cor_id){
+			mobileLoadPhotosByColor(_cor_id);
+			productLoadPhotosByColor({
+				cor_id: _cor_id,
+				tipo_fotos: '{{ html.matriz.tipo_fotos }}',
+			});
+			productPhotosColorSelected = _cor_id;
+		}
+
+		{% if html.matriz.grade_tipo == 'grid' %}
+		$('#geral, #mymodal').on('click', '.grade .l .cor .item', function(){
+			let _th = $(this);
+			let color = _th.data('cor');
+			productLoadPhotosByColor({
+				cor_id: color,
+				tipo_fotos: '{{ html.matriz.tipo_fotos }}',
+			});
+			mobileLoadPhotosByColor(color);
+		});
+		{% endif %}
+	});
+</script>
+
+{{ setTagsEcommerceProductDetail }}
+ 
+
+ATENÇÃO
+Obrigatoriamente coloque suas variáveis dinâmicas dentro de um div#produto-sku, caso contrário não irá funcionar os elementos em Javascript pré-programados.
+
+A div#produto-sku recebe como parâmetros os seguintes campos (veja no exemplo acima):
+
+data-sku string Obrigatório - O SKU do produto setado na tela-pai desta (detalhes do produto)
+
+data-widget string Obrigatório - Nome do seu widget dinâmico na árvore de widgets, exemplo: produtos-detalhes-sku.html
+
+data-loadingwhenchange string bool - Informe true para que mostre um pequeno informativo de carregamento (loading) sob o widget, indicando ao consumidor que está sendo processado. Informe false para desabilitar. Padrão: false
+
+# retorno dos dados
+ 
+googletags string raw - <div> com tags montadas preparadas para o Google Retargeting. Não se esqueça de fazer o Retargeting na tela-pai desta.
+
+pontoswb string raw - <div.clube-info-pontos> com informações dos pontos que o comprador ganhará na compra do produto caso o aplicativo Fidelização esteja ativo
+
+valor string raw - <div.valores> com informações do valor do produto em questão
+
+valor_atacado string raw - <div.valor_atacado> com informações do valor de atacado quando existente
+
+desconto string raw - <p.desconto> quando existente, mostra informações do desconto disponível
+
+compra_minima string raw - <p.compra_minima> quando existente, mostra informações de quantidade mínima para compra do SKU
+
+parcelamento string raw - <div.parcelas> quando existente, mostra por linha os parcelamentos disponíveis para o SKU com base no valor de venda
+
+contador_regressivo string raw - <div.countdown> mostra quando um produto estiver em promoção e a opção de mostrar contador regressivo está habilitada
+
+disponibilidade string raw - <p.disponibilidade> mostra o prazo de disponibilidade do produto
+
+ultimas_unidades string raw - <p.ultimas_unidades> mostra quanto habilitado e o SKU tiver 5 ou menos itens disponíveis
+
+frete_gratis string raw - <p.frete_gratis> quando existente, mostra o informativo: FRETE GRÁTIS
+
+grade string raw - <div> monta e mostra a grade disponível para o produto conforme a configuração da loja e tipo de grade
+
+campos_adicionais string raw - <div.campos_adicionais> quando existente, mostra campos adicionais que o consumidor deve selecionar antes de adicionar o produto no carrinho
+
+botao_carrinho string raw - <div.row-botao-carrinho> quando disponível, permite que o consumir adicione o SKU ao carrinho
+
+calculo_frete string raw - <div#calculo_frete> carrega o script responsável pelo cálculo de frete para o SKU selecionado
+
+tabela_medidas string raw - <button.tabela_medidas> ao ser clicado abre um modal com informações da tabela de medidas definida
+
+matriz array - Todos os dados contidos na matriz
+
+matriz.id int - ID do SKU
+
+matriz.sku string
+
+matriz.quantidade_em_estoque int - Quantidade atual em estoque da variação selecionada
+
+matriz.frete array
+
+matriz.frete.comprimento double
+
+matriz.frete.largura double
+
+matriz.frete.altura double
+
+matriz.frete.peso double
+
+matriz.frete.gratis boolean
+
+matriz.frete.base_calculo double - Valor base de cálculo para frete
+
+matriz.frete.permite_calculo boolean - Se true, permite mostrar o formulário de cálculo do frete
+
+matriz.prazo_producao int - Prazo de produtoção/disponibilizade do produto em dias úteis
+
+matriz.produto_url string
+
+matriz.desonto_mostra_valor boolean - Caso true, deve mostrar o valor do desconto em reais e não em porcentagem
+
+matriz.mostra_prazo_producao boolean - Caso true, deve mostrar o prazo de produção do produto
+
+matriz.parcelamento_list array - Lista dos métodos de parcelamento
+
+matriz.parcelamento_list.tipo string
+
+matriz.parcelamento_list.boleto boolean - Se true, este gateway está configurado para receber por boleto
+
+matriz.parcelamento_list.parcelas int - Quantidade de parcelas possíveis para pagamento
+
+matriz.parcelamento_list.valor_parcela double - Valor de cada parcela
+
+matriz.parcelamento_list.has_juros boolean - Se true, o valor_parcela está calculado com juros
+
+matriz.parcelamento_list.perc_desconto double - Percentual de desconto quando existente.
+
+matriz.link_externo string - Link externo do produto. Caso existente, deve ser respeitado e não deve-se adicionar o produto ao carrinho, pois a compra é feita externamente
+
+matriz.mostra_seletor_quantidade boolean - Caso true, deve mostrar o input de quantidade de produtos a ser adicionado no carrinho
+
+matriz.mostra_variacoes_titulo boolean - Caso true, deve-se mostrar o nome das variações (Cor e Tamanho) no título do produto ao navegar entre os SKUs
+
+matriz.produto_url string
+
+matriz.redireciona_ao_carrinho boolean - Caso true, ao clicar no botão de adicionar ao carrinho, deve-se redirecionar o consumidor imediatamente para /carrinho
+
+matriz.controla_estoque boolean - Caso true, a loja controla a venda por quantidade em estoque
+
+matriz.permite_cotacao boolean - Caso true, deve-se mostrar o botão e formulário para que seja possível solicitar uma cotação do produto
+
+matriz.permite_aviseme boolean - Caso true, deve-se mostrar o botão de avise-me
+
+matriz.mostra_contador_regressivo boolean - Caso true, deve-se mostrar o contador regressivo para o término de uma promoção quando existente
+
+matriz.mostra_ultimas_unidades boolean - Caso true, deve-se mostrar o informativo de últimas unidades disponíveis (geralmente informando a quantidade de estoque disponível)
+
+matriz.tabela_medidas int - ID da tabela de medidas
+
+matriz.grade_tipo int - ID do tipo de grade do produto
+
+matriz.mostrar_valor_apartir boolean - Caso true, deve-se mostrar a mensagem de "à partir" antes do valor principal
+
+matriz.sob_consulta boolean
+
+matriz.produto_esgotado boolean
+
+matriz.caracteristicas string - Texto cadastrado sobre as caracteristicas do produto
+
+productBox
+Disponibiliza como retorno os dados prontos para o Box do Produto na loja virtual.
+
+É necessario passar como parâmetro um produto este o qual deve ser recuperado em um laço for como resultado da consulta em store.productToBox()
+
+{% set box = html.productBox(produto) %}
+
+# retorna com 3 fotos por cada produto (quando existente)
+{% set box = html.productBox(produto, {total_fotos: '3'}) %}
+# exemplo de uso
+{% set box = html.productBox(produto) %}
+
+<div class="item" data-id="{{ produto.id }}" data-sku="{{ produto.url_sku }}">
+	<a href="{{ box.url_relative }}">
+		{{ box.fotos }}
+	</a>
+	{{ box.selos }}
+	{{ box.titulo }}
+	{{ box.codigo }}
+	{{ box.avaliacoes }}
+	{{ box.valor }}
+	{{ box.parcelamento }}
+	{{ box.recorrencia }}
+	{{ box.countdown }}
+	{{ box.valor_atacado }}
+	{{ box.frete_gratis }}
+	{{ box.html_cores }}
+	{{ box.html_variacoes }}
+	{{ box.html_atributos }}
+	{{ box.categorias }}
+	{{ box.desconto }}
+
+	{% if box.has_botoes %}
+		<div class="botoes">
+			{{ box.botao_olhar }}
+			{{ box.botao_comprar }}
+		</div>
+	{% endif %}
+</div>
+ 
+# retorno dos dados
+ 
+url_relative string - URL que leva aos detalhes do produto para possível compra
+
+fotos string raw  - contendo as fotos do produto
+
+selos string raw - com os selos selecionados para o produto pelo lojista
+
+titulo string raw - com o título do produto
+
+codigo string raw -  com o código do produto
+
+avaliacoes string raw - com o código sobre as avaliações do produto (estrelinhas)
+
+valor string raw - com os valores possíveis do produto (valor a vista no boleto / valor original)
+
+valor_atacado string raw - com os valores de atacado (quando existentes)
+
+parcelamento string raw - com informações sobre parcelas com base no valor do produto e nos gaterays ativos
+
+countdown string raw - com contador regressivo para produtos em promoção
+
+frete_gratis string raw -  com informação de Frete Grátis quando existente
+
+html_cores string raw - com as cores disponíveis para o produto
+
+html_variacoes string raw - com as variações disponíveis para o produto
+
+html_atributos string raw - com os atributos definidos para o produto
+
+categorias string raw - com as categorias do produto
+
+desconto string raw -  com a porcentagem de desconto disponível quando o produto está em promoção
+
+botao_olhar string raw -  com a configuração para abertura da tela OLHAR (espiadinha) do produto
+
+botao_comprar string raw -  com a configuração para abertura da tela de detalhes do produto e/ou adicionar ao carrinho direto caso este não tenha variações
+
+# Lista de parâmetros para consulta
+parâmetro	padrão	descrição
+total_fotos	2	A quantidade  total de fotos que deve ser retornado por produto

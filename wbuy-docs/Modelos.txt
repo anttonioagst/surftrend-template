@@ -1,0 +1,2064 @@
+Carrinho suspenso
+Modelo para utilização do carrinho suspenso. Insira o trecho de código no HTML do seu Topo
+
+{% if global.var_carrinho_suspenso %}
+<div class="suspended-cart">
+	<div class="cover"></div>
+	<div class="drop_new"></div>
+</div>
+{% endif %}
+
+<script>
+	$(function(){
+		loadSuspendedCartTheme();
+
+		readListener('totalItensCarrinho', function(){
+			loadSuspendedCartTheme();
+		});
+
+		readListener('onAddProductCart', function(){
+			openSuspendedCartTheme();
+		});
+	});
+
+	function openSuspendedCartTheme(){
+		$('.suspended-cart').addClass('open');
+		$('body').css({'overflow': 'hidden'});
+	}
+
+	function loadSuspendedCartTheme(){
+		$.post('load-widget.php', {widget:'widgets/new-suspended-cart.html'}, function(d){
+			$('.suspended-cart .drop_new').html(d);
+		});
+	}
+</script>
+Na mesma tela na aba de CSS/SCSS adicione o seu código, pode usar o modelo abaixo de exemplo:
+
+// SCSS/CSS
+.suspended-cart{
+    position: fixed;
+    z-index: 9999999999;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    visibility: hidden;
+
+    &.open{
+        visibility: visible;
+
+        .cover{
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .drop_new{
+            right: 0;
+        }
+    }
+
+    .cover{
+        background-color: rgba(0,0,0,0.7);
+        position: fixed;
+        z-index: 1;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        visibility: hidden;
+        opacity: 0;
+        transition: all .25s;
+    }
+
+    .drop_new{
+        position: fixed;
+        top: 0;
+        right: -500px;
+        width: 100%;
+        max-width: 500px;
+        height: 100%;
+        background-color: #FFF;
+        z-index: 2;
+        transition: all .25s;
+
+        .drop-header{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: solid 1px #DDD;
+
+            h3{
+                font-size: 20px;
+                font-weight: bold;
+            }
+
+            .fechar{
+                width: 35px;
+                height: 35px;
+                border: solid 1px #DDD;
+                border-radius: 3px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                font-size: 14px;
+                cursor: pointer;
+            }
+        }
+
+        .msg-empty{
+            padding: 30px;
+            font-size: 23px;
+            line-height: 26px;
+            text-align: center;
+        }
+
+        .drop-list{
+            height: calc(100% - 290px);
+            overflow: auto;
+
+            .item{
+                padding: 20px;
+
+                .foto{
+                    width: 100px;
+                    display: inline-block;
+                    margin-right: 20px;
+                    vertical-align: top;
+                }
+
+                .det{
+                    width: calc(100% - 130px);
+                    display: inline-block;
+                    vertical-align: top;
+                    position: relative;
+
+                    .produto{
+                        width: calc(100% - 30px);
+                        display: inline-block;
+                    }
+
+                    .valores{
+                        margin-top: 10px;
+                        display: flex;
+                        justify-content: space-between;
+                    }
+
+                    .item-delete{
+                        width: 25px;
+                        height: 25px;
+                        position: absolute;
+                        top: 0;
+                        right: 0;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        cursor: pointer;
+                        border: solid 1px #DDD;
+                        border-radius: 3px;
+                    }
+                }
+            }
+        }
+
+        .drop-footer{
+            padding: 20px;
+
+            .item{
+                display: flex;
+                justify-content: space-between;
+                padding: 5px 0;
+            }
+
+            .botoes{
+                display: flex;
+                justify-content: space-between;
+                padding-top: 15px;
+                margin-top: 10px;
+                border-top: solid 1px #DDD;
+                text-align: center;
+                line-height: 15px;
+
+                a{
+                    margin-left: 10px;
+                    border: solid 1px #666;
+                    color: #000;
+                    font-size: 12px;
+                    width: 50%;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    height: 60px;
+                    padding: 5px;
+
+                    &:active{
+                        opacity: 0.7;
+                    }
+
+                    &:first-child{
+                        margin-left: 0;
+                    }
+
+                    &.bt-finalizar{
+                        background-color: #666;
+                        color: #FFF;
+                    }
+                }
+            }
+        }
+    }
+}
+Agora no editor do tema, clique em novo e escolha widget, coloque o nome exatamente como colocamos função loadSuspendedCartNew: new-suspended-cart
+
+Abaixo um exemplo de carrinho suspenso, cole o código abaixo:
+
+# HTML
+{% set carrinho = store.cart() %}
+{% set valores = carrinho.cart.amount %}
+{% set valor_carrinho_str = valores.total %}
+
+<div class="drop-header">
+    <h3>CARRINHO CUSTOMIZADO</h3>
+    <span class="fechar">&times;</span>
+</div>
+
+{% if carrinho.total_items == 0 %}
+<div class="msg-empty">
+    <p><strong>Seu carrinho está vazio</strong>, que tal adicionar um produto?</p>
+</div>
+{% else %}
+
+<div class="drop-list">
+    {% for item in carrinho.cart.items %}
+    <div class="item" data-sku="{{ item.sku }}">
+        <div class="foto">
+            <img src="{{ item.foto }}" alt="{{ item.produto }}" class="img-fluid" />
+        </div>
+        <div class="det">
+            <h3 class="produto mb-2"><strong>{{ item.produto }}</strong></h3>
+            {% if item.prazo_entrega > 0 %}
+            {{ item.prazo_entrega_raw }}
+            {% endif %}
+            {% if item.cor or item.variacao %}
+            {{ item.variacao_raw }}
+            {% endif %}
+            <p class="valores">
+                <span>{{ item.quantidade }}x R${{ item.valor_unitario|valor }}</span>
+                <span class="text-right"><strong>R${{ item.valor_parcial|valor }}</strong></span>
+            </p>
+            <span class="item-delete text-danger"><i class="fa fa-trash"></i></span>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+<div class="drop-footer">
+    <p class="item">
+        <span>Subtotal</span>
+        <span class="text-right">R${{ valores.subtotal|valor }}</span>
+    </p>
+    <p class="item">
+        <span>Desconto</span>
+        <span class="text-right">R${{ valores.discount|valor }}</span>
+    </p>
+    <p class="item">
+        <span><strong>Total</strong></span>
+        <span class="text-right"><strong>R${{ valores.total|valor }}</strong></span>
+    </p>
+    <div class="botoes">
+        <a href="#" class="bt-continuar fechar">CONTINUAR COMPRANDO</a>
+        <a href="carrinho/" class="bt-finalizar">FINALIZAR COMPRA</a>
+    </div>
+</div>
+{% endif %}
+
+<script>
+    $(function(){
+        $('header .cart .sup').html('{{ carrinho.total_items }}');
+        $('header .cart-total .cart-total-label').html('R${{ valores.total|valor }}');
+    });
+</script>
+
+Página de busca
+Página responsável por mostrar produtos retornados em uma busca na loja virtual.
+
+Para resgatar os dados desta página você deve armazenar a variável fixa page_search e trabalhar encima do retorno dos dados.
+
+# exemplo
+{% set dados = page_search %}
+ 
+
+ Os parâmetros disponíveis na variável page_search são os mesmos encontrados em store.pageProducts() com adição da variável page, que contém os seguintes dados:
+
+page.title string - Termo que foi usado na busca
+
+page.hasMenuLateral boolean - Se true, existem opções a serem exibidas para filtragem e deve-se mostrá-las.
+
+page.mobile.coluna_dupla boolean - Se true, os produtos exibidos devem ser mostrados em 2 colunas por linha.
+
+Página de categorias de produtos
+Modelo completo da página de categorias de produtos.
+
+# HTML
+{% set dados = page_category %}
+
+<div class="central">
+	<main class="block categorias">
+		{% if filiais|length >= 1 %}
+		<section id="filiais" class="block">
+			<h2 class="titulo mb-3">FORNECEDORES</h2>
+			<div class="block">
+				<div class="itens owl-auto owl-carousel owl-theme" data-items="4" data-responsive800="2" data-loop="false" data-margin="10">
+					{% for item in filiais %}
+					<div class="item">
+						<a href="{{ item.url_interna_matriz }}"><img src="{{ item.logo }}" alt="{{ item.nome }}" class="img-fluid" /></a>
+					</div>
+					{% endfor %}
+				</div>
+			</div>
+		</section>
+		{% endif %}
+		<section id="departamentos" class="block">
+			<nav class="mb-3" aria-label="breadcrumb">
+				<ol class="breadcrumb" itemprop="breadcrumb" itemscope itemtype="https://schema.org/BreadcrumbList">
+					<li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+						<a href="{{ base }}/" itemprop="item">
+							<span itemprop="name">Página inicial</span>
+						</a>
+						<meta itemprop="position" content="1" />
+					</li>
+					<li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+						<a href="{{ dados.page.cl1.url }}" itemprop="item">
+							<span itemprop="name">{{ dados.page.cl1.nome }}</span>
+						</a>
+						<meta itemprop="position" content="2" />
+					</li>
+					{% if dados.page.cl2.nome %}
+					<li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+						<a href="{{ dados.page.cl2.url }}" itemprop="item">
+							<span itemprop="name">{{ dados.page.cl2.nome }}</span>
+						</a>
+						<meta itemprop="position" content="3" />
+					</li>
+					{% endif %}
+					{% if dados.page.cl3.nome %}
+					<li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+						<a href="{{ dados.page.cl3.url }}/" itemprop="item">
+							<span itemprop="name">{{ dados.page.cl3.nome }}</span>
+						</a>
+						<meta itemprop="position" content="4" />
+					</li>
+					{% endif %}
+				</ol>
+			</nav>
+
+			<div class="d-flex d-md-none mobile-filtro">
+				<div class="item">
+					<a href="" class="action filtrar-por"><i class="fa fa-filter fa-fw"></i> Filtrar</a>
+				</div>
+				<div class="item">
+					<a href="" class="action ordenar-por"><i class="fa fa-sort fa-fw"></i> Ordenar</a>
+					<div class="drop-filtro">
+						{% for item in dados.filters %}
+						<a href="{{ item.data_url }}" class="{{ item.selected ? ' selected' : '' }}">{{ item.name }}</a>
+						{% endfor %}
+					</div>
+				</div>
+			</div>
+
+			<div class="mobile-filtro-suspended d-block d-md-none">
+				<div class="cover-filtro"></div>
+				<div class="drop-filtro">
+					<div class="drop-header">
+						<h3>FILTRAR</h3>
+						<span class="fechar">&times;</span>
+					</div>
+					<div class="drop-list">
+						{% if dados.prices.items|length > 0 or extra.vl1 %}
+						<div class="listing vars">
+							<h3 class="t block">
+								<span class="float-left">POR PREÇO</span>
+								{% if extra.vl1 %}
+								<span class="float-right"><a href="{{ dados.prices.url_all }}" style="font-size: 10px;">Ver todos</a></span>
+								{% endif %}
+							</h3>
+							<div class="b">
+								{% for item in dados.prices.items %}
+								{% set texto_valor = item.de == "0.01" ? ("até R$"~item.ate|valor) : ("de R$"~item.de|valor~" até R$"~item.ate|valor) %}
+								<a href="{{ item.url }}"{{ extra.vl1 == item.de ? ' class="active"' : '' }}>{{ texto_valor }}</a>
+								{% endfor %}
+							</div>
+						</div>
+						{% endif %}
+						{% if dados.colors.items|length >= 1 %}
+						<div class="listing colors">
+							<h3 class="t block">
+								<span class="float-left">COR</span>
+								{% if extra.cor %}
+								<span class="float-right"><a href="{{ dados.colors.url_all }}" style="font-size: 10px;">Ver todos </a></span>
+								{% endif %}
+							</h3>
+							<div class="b">
+								{% for cor in dados.colors.items %}
+								<a href="{{ cor.url }}"{{ extra.cor == cor.id ? ' class="active"' : '' }}>{{ cor.nome }}</a>
+								{% endfor %}
+							</div>
+						</div>
+						{% endif %}
+						{% for variacao in dados.variations %}
+						<div class="listing vars">
+							<h3 class="t block">
+								<span class="float-left">{{ variacao.nome|upper }}</span>
+								{% if extra.var %}
+								<span class="float-right"><a href="{{ variacao.url_all }}" style="font-size: 10px;">Ver todos</a></span>
+								{% endif %}
+							</h3>
+							<div class="b">
+								{% for item in variacao.items %}
+								<a href="{{ item.url }}"{{ extra.var == item.id ? ' class="active"' : '' }}>{{ item.valor }}</a>
+								{% endfor %}
+							</div>
+						</div>
+						{% endfor %}
+
+						{% for variacao in dados.attributes %}
+						<div class="listing vars">
+							<h3 class="t block">
+								<span class="float-left">{{ variacao.nome|upper }}</span>
+								{% if extra.attr %}
+								<span class="float-right"><a href="{{ variacao.url_all }}" style="font-size: 10px;">Ver todos</a></span>
+								{% endif %}
+							</h3>
+							<div class="b">
+								{% for item in variacao.items %}
+								<a href="{{ item.url }}"{{ extra.attr == item.id ? ' class="active"' : '' }}>{{ item.nome }}</a>
+								{% endfor %}
+							</div>
+						</div>
+						{% endfor %}
+
+						{% if dados.brands.items|length >= 1 %}
+						<div class="listing vars">
+							<h3 class="t block">
+								<span class="float-left">MARCA</span>
+								{% if extra.b %}
+								<span class="float-right"><a href="{{ dados.brands.url_all }}" style="font-size: 10px;">Ver todos</a></span>
+								{% endif %}
+							</h3>
+							<div class="b">
+								{% for item in dados.brands.items %}
+								<a href="{{ item.url }}"{{ extra.b == item.id ? ' class="active"' : '' }}>{{ item.marca }}</a>
+								{% endfor %}
+							</div>
+						</div>
+						{% endif %}
+
+						{% if dados.categories_l2|length >= 1 %}
+						<div class="listing">
+							<h3 class="t"><span class="c">{{ dados.page.cl1.nome|upper }}</span></h3>
+							<div class="b">
+								{% for categoria in dados.categories_l2 %}
+								<a href="{{ categoria.url }}"{{ extra.clevel2 and extra.clevel2 in categoria.url  ? ' class="active"' : '' }}>{{ categoria.nome }} ({{ categoria.total_produtos_ativos }})</a>
+								{% endfor %}
+							</div>
+						</div>
+						{% endif %}
+						{% if dados.categories_l3|length >= 1 %}
+						<div class="listing">
+							<h3 class="t"><span class="c">{{ dados.page.cl2.nome|upper }}</span></h3>
+							<div class="b">
+								{% for categoria in dados.categories_l3 %}
+								<a href="{{ categoria.url }}"{{ extra.clevel3 and extra.clevel3 in categoria.url ? ' class="active"' : '' }}>{{ categoria.nome }} ({{ categoria.total_produtos_ativos }})</a>
+								{% endfor %}
+							</div>
+						</div>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+
+			{% if geral.hasPerformaAI %}
+			<performa></performa>
+			{% endif %}
+
+			<h2 class="titulo my-0 mb-3">{{ dados.page.title|upper }}</h2>
+			<p class="text-muted mb-3 d-block d-md-none"><span>{{ dados.products.total ~ plural(dados.products.total, ' ', 'produto encontrado', 'produtos encontrados') }}</span></p>
+
+			{% if dados.kits|length > 0 %}
+				<div class="block prod-kits">
+					<div class="row justify-content-center">
+						{% for kit in dados.kits %}
+							<div class="col-md-3 mb-4 text-center">
+								<div class="block item">
+									<a href="{{ kit.url }}">
+										<div class="foto">
+											<img src="{{ kit.foto }}" alt="{{ kit.titulo }}" class="img-cover" />
+										</div>
+									</a>
+									<div class="det">
+										<h3 class="t">{{ kit.titulo }} </h3>
+										<p class="mb-2">{{ kit.produtos ~ plural(kit.produtos, ' ite', 'm', 'ns') }}</p>
+										<div class="valores">
+											{% if kit.isPromo %}
+												<p class="valor_de">R${{ kit.valor_base|valor }}</p>
+											{% endif %}
+											<p class="valor_por">R${{ kit.valor_final|valor }}</p>
+										</div>
+										<a href="{{ kit.url }}" class="bt-comprar">COMPRAR O KIT</a>
+									</div>
+									{% if kit.frete_gratis %}
+										<p class="frete-gratis"><span class="px-2 py-1">FRETE GRÁTIS</span></p>
+									{% endif %}
+									{% if kit.desconto_percentual %}
+										<span class="desconto">-{{ kit.desconto_percentual|round(0, 'floor') }}%</span>
+									{% endif %}
+								</div>
+							</div>
+						{% endfor %}
+					</div>
+				</div>
+
+				<h2 class="titulo my-0 mb-3">PRODUTOS</h2>
+			{% endif %}
+
+			<div class="row d-none d-md-flex">
+				<div class="col-md-6">
+					<span>{{ dados.products.total ~ plural(dados.products.total, ' ', 'produto encontrado', 'produtos encontrados') }}</span>
+				</div>
+				<div class="col-md-6 text-md-right">
+					<span>Ordenar por</span>
+					<select class="border border-dark p-1 mx-2 orderby" style="width: 150px; font-size: 12px;">
+						{% for item in dados.filters %}
+						<option value="{{ item.value }}" data-url="{{ item.data_url }}"{{ item.selected ? ' selected' : '' }}>{{ item.name }}</option>
+						{% endfor %}
+					</select>
+				</div>
+			</div>
+
+			{% if dados.page.hasMenuLateral %}
+			<div class="cln p d-none d-md-block">
+				<div class="block d-block d-md-none text-center filtrar">
+					<h4 class="t"><span class="border border-dark p-2 d-inline-block">FILTRAR <i class="fa fa-caret-down"></i></span></h4>
+				</div>
+				<div class="block d-none d-md-block animated fadeIn filtros">
+					{% if dados.prices.items|length > 0 or extra.vl1 %}
+					<div class="listing vars">
+						<h3 class="t block">
+							<span class="float-left">POR PREÇO</span>
+							{% if extra.vl1 %}
+							<span class="float-right"><a href="{{ dados.prices.url_all }}" style="font-size: 10px;">Ver todos</a></span>
+							{% endif %}
+						</h3>
+						<div class="b">
+							{% for item in dados.prices.items %}
+							{% set texto_valor = item.de == "0.01" ? ("até R$"~item.ate|valor) : ("de R$"~item.de|valor~" até R$"~item.ate|valor) %}
+							<a href="{{ item.url }}"{{ extra.vl1 == item.de ? ' class="active"' : '' }}>{{ texto_valor }}</a>
+							{% endfor %}
+						</div>
+					</div>
+					{% endif %}
+					{% if dados.categories_l2|length >= 1 %}
+					<div class="listing">
+						<h3 class="t"><span class="c">{{ dados.page.cl1.nome|upper }}</span></h3>
+						<div class="b">
+							{% for categoria in dados.categories_l2 %}
+							<a href="{{ categoria.url }}"{{ extra.clevel2 and extra.clevel2 in categoria.url  ? ' class="active"' : '' }}>{{ categoria.nome }} ({{ categoria.total_produtos_ativos }})</a>
+							{% endfor %}
+						</div>
+					</div>
+					{% endif %}
+
+					{% if dados.categories_l3|length >= 1 %}
+					<div class="listing">
+						<h3 class="t"><span class="c">{{ dados.page.cl2.nome|upper }}</span></h3>
+						<div class="b">
+							{% for categoria in dados.categories_l3 %}
+							<a href="{{ categoria.url }}"{{ extra.clevel3 and extra.clevel3 in categoria.url ? ' class="active"' : '' }}>{{ categoria.nome }} ({{ categoria.total_produtos_ativos }})</a>
+							{% endfor %}
+						</div>
+					</div>
+					{% endif %}
+
+					{% if dados.colors.items|length >= 1 %}
+					<div class="listing colors">
+						<h3 class="t block">
+							<span class="float-left">COR</span>
+							{% if extra.cor %}
+							<span class="float-right"><a href="{{ dados.colors.url_all }}" style="font-size: 10px;">Ver todos</a></span>
+							{% endif %}
+						</h3>
+						<div class="b">
+							{% for cor in dados.colors.items %}
+							<a href="{{ cor.url }}"{{ extra.cor == cor.id ? ' class="active"' : '' }}>{{ cor.nome }}</a>
+							{% endfor %}
+						</div>
+					</div>
+					{% endif %}
+
+					{% for variacao in dados.variations %}
+					<div class="listing vars">
+						<h3 class="t block">
+							<span class="float-left">{{ variacao.nome|upper }}</span>
+							{% if extra.var %}
+							<span class="float-right"><a href="{{ variacao.url_all }}" style="font-size: 10px;">Ver todos</a></span>
+							{% endif %}
+						</h3>
+						<div class="b">
+							{% for item in variacao.items %}
+							<a href="{{ item.url }}"{{ extra.var == item.id ? ' class="active"' : '' }}>{{ item.valor }}</a>
+							{% endfor %}
+						</div>
+					</div>
+					{% endfor %}
+
+					{% for variacao in dados.attributes %}
+					<div class="listing vars">
+						<h3 class="t block">
+							<span class="float-left">{{ variacao.nome|upper }}</span>
+							{% if extra.var %}
+							<span class="float-right"><a href="{{ variacao.url_all }}" style="font-size: 10px;">Ver todos</a></span>
+							{% endif %}
+						</h3>
+						<div class="b">
+							{% for item in variacao.items %}
+							<a href="{{ item.url }}"{{ extra.attr == item.id ? ' class="active"' : '' }}>{{ item.nome }}</a>
+							{% endfor %}
+						</div>
+					</div>
+					{% endfor %}
+
+					{% if dados.brands.items|length >= 1 %}
+					<div class="listing vars">
+						<h3 class="t block">
+							<span class="float-left">MARCA</span>
+							{% if extra.b %}
+							<span class="float-right"><a href="{{ dados.brands.url_all }}" style="font-size: 10px;">Ver todos</a></span>
+							{% endif %}
+						</h3>
+						<div class="b">
+							{% for item in dados.brands.items %}
+							<a href="{{ item.url }}"{{ extra.b == item.id ? ' class="active"' : '' }}>{{ item.marca }}</a>
+							{% endfor %}
+						</div>
+					</div>
+					{% endif %}
+				</div>
+			</div>
+			{% endif %}
+
+			<div class="cln s{{ not dados.page.hasMenuLateral ? ' w-100' : ''}}">
+				{% if dados.page.banner %}
+				<div class="block mb-4 text-center">
+					{{ dados.page.banner_raw|raw }}
+				</div>
+				{% endif %}
+				{% if dados.page.infotexto %}
+				<div id="seo_info" class="texto mb-4">
+					{{ dados.page.infotexto|raw }}
+				</div>
+				{% endif %}
+
+				<!--
+				<div class="produtos">
+					<div class="row">
+						{% for produto in dados.products.data %}
+						<div class="{{dados.page.hasMenuLateral ? 'col-md-4' : 'col-md-3' }} {{ dados.page.mobile.coluna_dupla ? 'col-6' : 'col-12' }}">
+							{{ store.productBoxDefault(produto) }}
+						</div>
+						{% else %}
+						<div class="col">
+							<div class="alert alert-info text-center">
+								<p>Nenhum produto encontrado no momento em: {{ dados.page.title }}</p>
+							</div>
+						</div>
+						{% endfor %}
+					</div>
+				</div>
+				-->
+
+				<div class="produtos">
+					<div class="row">
+						{% for produto in dados.products.data %}
+						<div class="{{dados.page.hasMenuLateral ? 'col-md-4' : 'col-md-3' }} {{ dados.page.mobile.coluna_dupla ? 'col-6' : 'col-12' }}">
+							{{ include('widgets/box-do-produto.html') }}
+						</div>
+						{% else %}
+						<div class="col">
+							<div class="alert alert-info text-center">
+								<p>Nenhum produto encontrado no momento em: {{ dados.page.title }}</p>
+							</div>
+						</div>
+						{% endfor %}
+					</div>
+				</div>
+
+				{% if dados.pagination.page_total > 1 %}
+				<div class="row divider mb-4">
+					<div class="col text-center">
+						{{ dados.pagination.page_prev ? ('<a href="' ~ dados.pagination.page_prev ~ '" class="btn btn-sm btn-outline-dark"><i class="fa fa-caret-left fa-fw"></i> Página anterior</a>')|raw : '<span class="btn btn-sm btn-outline-dark disabled"><i class="fa fa-caret-left fa-fw"></i> Página anterior</span>' }}
+						<select class="border border-dark mx-1" onChange="location.href=this.value;" style="height: 31px; display: inline-block; vertical-align: middle; padding: 0 5px; background-color: transparent;">
+							{% for page in dados.pagination.page_all %}
+							<option value="{{ page.url }}"{{ pagination.page_atual == page.page ? ' selected' : '' }}>{{ page.page }}</option>
+							{% endfor %}
+						</select>
+						{{ dados.pagination.page_next ? ('<a href="' ~ dados.pagination.page_next ~ '" class="btn btn-sm btn-outline-dark"><i class="fa fa-caret-right fa-fw"></i> Próxima página</a>')|raw : '<span class="btn btn-sm btn-outline-dark disabled"><i class="fa fa-caret-right fa-fw"></i> Próxima página</span>' }}
+					</div>
+				</div>
+				{% endif %}
+			</div>
+
+			{% if geral.hasSmartHint %}
+			<div id="smarthint-position-1"></div>
+			<div id="smarthint-position-2"></div>
+			<div id="smarthint-position-3"></div>
+			<div id="smarthint-position-4"></div>
+			<div id="smarthint-position-5"></div>
+			{% endif %}
+
+			{% if geral.hasPerformaAI %}
+			<performa></performa>
+			{% endif %}
+		</section>
+	</div>
+
+	<script>
+	$(function(){
+		{% if geral.hasSmartHint %}
+			SmartHint.Call('setPage',{type:'category', data: {content: '{{ dados.page.title }}'} });
+		{% endif %}
+
+		$('.filtrar').click(function(){
+			$(this).toggleClass('mb-4');
+			$('.filtros').toggleClass('d-none');
+		});
+
+		$('.orderby').change(function(){
+			var url = $('option:selected', this).data('url');
+			location.href = url;
+		});
+	});
+	</script>
+
+	{{ dados.page.seo_scripts|raw }}
+</main>
+// CSS
+#geral{
+	overflow: inherit;
+}
+
+main.categorias{
+	padding: 0 50px;
+}
+
+#departamentos{
+	padding-top: 20px;
+	min-height: 300px;
+
+	.title{
+		margin-bottom: 20px;
+	}
+
+	.cln{
+		float: left;
+		display: block;
+
+		&.p{
+			width: 250px;
+			padding-right: 15px;
+
+			.listing{
+				width: 100%;
+				float: left;
+				margin-bottom: 20px;
+
+				&.colors{
+					.cor_primaria{
+						width: 30px !important;
+						height: 30px;
+						position: relative;
+						border: solid 1px #444;
+						margin: 2px;
+						display: inline-block;
+						border-radius: 100%;
+						overflow: hidden;
+
+						&.active{
+							border-color: #b4ff95;
+							border-width: 4px;
+
+							.cor_secundaria{
+								border-width: 22px;
+							}
+						}
+					}
+
+					.cor_secundaria{
+						position: absolute;
+						right: 0;
+						top: 0;
+						border-left: solid 28px transparent;
+						border-bottom: solid 28px transparent;
+					}
+				}
+
+				.b{
+					width: 100%;
+					float: left;
+				}
+
+				.t{
+					font-size: 16px;
+					line-height: 18px;
+					margin-bottom: 10px;
+					color: #000;
+					font-weight: bold;
+				}
+
+				a{
+					width: 100%;
+					float: left;
+					line-height: 22px;
+					color: #000;
+					font-weight: 100;
+					text-transform: uppercase;
+					margin-bottom: 3px;
+
+					&:hover{
+						text-decoration: underline !important;
+					}
+
+					&.active{
+						color: #3E8ED8;
+					}
+				}
+			}
+		}
+
+		&.s{
+			width: calc(100% - 250px);
+		}
+	}
+}
+
+.produtos{
+	.row{
+		margin-left: -5px;
+		margin-right: -5px;
+	}
+
+	.item .more{
+		display: none;
+	}
+}
+
+@media screen and(max-width: 768px){
+	main.categorias{
+		padding: 0;
+	}
+}
+
+Página de categorias de produtos com paginação dinâmica
+Modelo completo da página de categorias de produtos com paginação dinâmica.
+
+Você vai precisar além da página padrão, criar um widget adicional, o qual será chamado dinamicamente. O widget deverá se chamar "pagina-categorias-produtos.html" e seu conteúdo encontra-se abaixo.
+
+# HTML da página de categorias
+{% set dados = page_category %}
+
+<div class="central">
+	<main class="block categorias">
+		{% if filiais|length >= 1 %}
+		<section id="filiais" class="block">
+			<h2 class="titulo mb-3">FORNECEDORES</h2>
+			<div class="block">
+				<div class="itens owl-auto owl-carousel owl-theme" data-items="4" data-responsive800="2" data-loop="false" data-margin="10">
+					{% for item in filiais %}
+					<div class="item">
+						<a href="{{ item.url_interna_matriz }}"><img src="{{ item.logo }}" alt="{{ item.nome }}" class="img-fluid" /></a>
+					</div>
+					{% endfor %}
+				</div>
+			</div>
+		</section>
+		{% endif %}
+		<section id="departamentos" class="block">
+			<nav class="mb-3" aria-label="breadcrumb">
+				<ol class="breadcrumb" itemprop="breadcrumb" itemscope itemtype="https://schema.org/BreadcrumbList">
+					<li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+						<a href="{{ base }}/" itemprop="item">
+							<span itemprop="name">Página inicial</span>
+						</a>
+						<meta itemprop="position" content="1" />
+					</li>
+					<li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+						<a href="{{ dados.page.cl1.url }}" itemprop="item">
+							<span itemprop="name">{{ dados.page.cl1.nome }}</span>
+						</a>
+						<meta itemprop="position" content="2" />
+					</li>
+					{% if dados.page.cl2.nome %}
+					<li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+						<a href="{{ dados.page.cl2.url }}" itemprop="item">
+							<span itemprop="name">{{ dados.page.cl2.nome }}</span>
+						</a>
+						<meta itemprop="position" content="3" />
+					</li>
+					{% endif %}
+					{% if dados.page.cl3.nome %}
+					<li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+						<a href="{{ dados.page.cl3.url }}/" itemprop="item">
+							<span itemprop="name">{{ dados.page.cl3.nome }}</span>
+						</a>
+						<meta itemprop="position" content="4" />
+					</li>
+					{% endif %}
+				</ol>
+			</nav>
+
+			<div class="d-flex d-md-none mobile-filtro">
+				<div class="item">
+					<a href="" class="action filtrar-por"><i class="fa fa-filter fa-fw"></i> Filtrar</a>
+				</div>
+				<div class="item">
+					<a href="" class="action ordenar-por"><i class="fa fa-sort fa-fw"></i> Ordenar</a>
+					<div class="drop-filtro">
+						{% for item in dados.filters %}
+						<a href="{{ item.data_url }}" class="{{ item.selected ? ' selected' : '' }}">{{ item.name }}</a>
+						{% endfor %}
+					</div>
+				</div>
+			</div>
+
+			<div class="mobile-filtro-suspended d-block d-md-none">
+				<div class="cover-filtro"></div>
+				<div class="drop-filtro">
+					<div class="drop-header">
+						<h3>FILTRAR</h3>
+						<span class="fechar">&times;</span>
+					</div>
+					<div class="drop-list">
+						{% if dados.prices.items|length > 0 or extra.vl1 %}
+						<div class="listing vars">
+							<h3 class="t block">
+								<span class="float-left">POR PREÇO</span>
+								{% if extra.vl1 %}
+								<span class="float-right"><a href="{{ dados.prices.url_all }}" style="font-size: 10px;">Ver todos</a></span>
+								{% endif %}
+							</h3>
+							<div class="b">
+								{% for item in dados.prices.items %}
+								{% set texto_valor = item.de == "0.01" ? ("até R$"~item.ate|valor) : ("de R$"~item.de|valor~" até R$"~item.ate|valor) %}
+								<a href="{{ item.url }}"{{ extra.vl1 == item.de ? ' class="active"' : '' }}>{{ texto_valor }}</a>
+								{% endfor %}
+							</div>
+						</div>
+						{% endif %}
+						{% if dados.colors.items|length >= 1 %}
+						<div class="listing colors">
+							<h3 class="t block">
+								<span class="float-left">COR</span>
+								{% if extra.cor %}
+								<span class="float-right"><a href="{{ dados.colors.url_all }}" style="font-size: 10px;">Ver todos </a></span>
+								{% endif %}
+							</h3>
+							<div class="b">
+								{% for cor in dados.colors.items %}
+								<a href="{{ cor.url }}"{{ extra.cor == cor.id ? ' class="active"' : '' }}>{{ cor.nome }}</a>
+								{% endfor %}
+							</div>
+						</div>
+						{% endif %}
+						{% for variacao in dados.variations %}
+						<div class="listing vars">
+							<h3 class="t block">
+								<span class="float-left">{{ variacao.nome|upper }}</span>
+								{% if extra.var %}
+								<span class="float-right"><a href="{{ variacao.url_all }}" style="font-size: 10px;">Ver todos</a></span>
+								{% endif %}
+							</h3>
+							<div class="b">
+								{% for item in variacao.items %}
+								<a href="{{ item.url }}"{{ extra.var == item.id ? ' class="active"' : '' }}>{{ item.valor }}</a>
+								{% endfor %}
+							</div>
+						</div>
+						{% endfor %}
+
+						{% for variacao in dados.attributes %}
+						<div class="listing vars">
+							<h3 class="t block">
+								<span class="float-left">{{ variacao.nome|upper }}</span>
+								{% if extra.attr %}
+								<span class="float-right"><a href="{{ variacao.url_all }}" style="font-size: 10px;">Ver todos</a></span>
+								{% endif %}
+							</h3>
+							<div class="b">
+								{% for item in variacao.items %}
+								<a href="{{ item.url }}"{{ extra.attr == item.id ? ' class="active"' : '' }}>{{ item.nome }}</a>
+								{% endfor %}
+							</div>
+						</div>
+						{% endfor %}
+
+						{% if dados.brands.items|length >= 1 %}
+						<div class="listing vars">
+							<h3 class="t block">
+								<span class="float-left">MARCA</span>
+								{% if extra.b %}
+								<span class="float-right"><a href="{{ dados.brands.url_all }}" style="font-size: 10px;">Ver todos</a></span>
+								{% endif %}
+							</h3>
+							<div class="b">
+								{% for item in dados.brands.items %}
+								<a href="{{ item.url }}"{{ extra.b == item.id ? ' class="active"' : '' }}>{{ item.marca }}</a>
+								{% endfor %}
+							</div>
+						</div>
+						{% endif %}
+
+						{% if dados.categories_l2|length >= 1 %}
+						<div class="listing">
+							<h3 class="t"><span class="c">{{ dados.page.cl1.nome|upper }}</span></h3>
+							<div class="b">
+								{% for categoria in dados.categories_l2 %}
+								<a href="{{ categoria.url }}"{{ extra.clevel2 and extra.clevel2 in categoria.url  ? ' class="active"' : '' }}>{{ categoria.nome }} ({{ categoria.total_produtos_ativos }})</a>
+								{% endfor %}
+							</div>
+						</div>
+						{% endif %}
+						{% if dados.categories_l3|length >= 1 %}
+						<div class="listing">
+							<h3 class="t"><span class="c">{{ dados.page.cl2.nome|upper }}</span></h3>
+							<div class="b">
+								{% for categoria in dados.categories_l3 %}
+								<a href="{{ categoria.url }}"{{ extra.clevel3 and extra.clevel3 in categoria.url ? ' class="active"' : '' }}>{{ categoria.nome }} ({{ categoria.total_produtos_ativos }})</a>
+								{% endfor %}
+							</div>
+						</div>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+
+			{% if geral.hasPerformaAI %}
+			<performa></performa>
+			{% endif %}
+
+			<h2 class="titulo my-0 mb-3">{{ dados.page.title|upper }}</h2>
+			<p class="text-muted mb-3 d-block d-md-none"><span>{{ dados.products.total ~ plural(dados.products.total, ' ', 'produto encontrado', 'produtos encontrados') }}</span></p>
+
+			{% if dados.kits|length > 0 %}
+				<div class="block prod-kits">
+					<div class="row justify-content-center">
+						{% for kit in dados.kits %}
+							<div class="col-md-3 mb-4 text-center">
+								<div class="block item">
+									<a href="{{ kit.url }}">
+										<div class="foto">
+											<img src="{{ kit.foto }}" alt="{{ kit.titulo }}" class="img-cover" />
+										</div>
+									</a>
+									<div class="det">
+										<h3 class="t">{{ kit.titulo }} </h3>
+										<p class="mb-2">{{ kit.produtos ~ plural(kit.produtos, ' ite', 'm', 'ns') }}</p>
+										<div class="valores">
+											{% if kit.isPromo %}
+												<p class="valor_de">R${{ kit.valor_base|valor }}</p>
+											{% endif %}
+											<p class="valor_por">R${{ kit.valor_final|valor }}</p>
+										</div>
+										<a href="{{ kit.url }}" class="bt-comprar">COMPRAR O KIT</a>
+									</div>
+									{% if kit.frete_gratis %}
+										<p class="frete-gratis"><span class="px-2 py-1">FRETE GRÁTIS</span></p>
+									{% endif %}
+									{% if kit.desconto_percentual %}
+										<span class="desconto">-{{ kit.desconto_percentual|round(0, 'floor') }}%</span>
+									{% endif %}
+								</div>
+							</div>
+						{% endfor %}
+					</div>
+				</div>
+
+				<h2 class="titulo my-0 mb-3">PRODUTOS</h2>
+			{% endif %}
+
+			<div class="row d-none d-md-flex">
+				<div class="col-md-6">
+					<span>{{ dados.products.total ~ plural(dados.products.total, ' ', 'produto encontrado', 'produtos encontrados') }}</span>
+				</div>
+				<div class="col-md-6 text-md-right">
+					<span>Ordenar por</span>
+					<select class="border border-dark p-1 mx-2 orderby" style="width: 150px; font-size: 12px;">
+						{% for item in dados.filters %}
+						<option value="{{ item.value }}" data-url="{{ item.data_url }}"{{ item.selected ? ' selected' : '' }}>{{ item.name }}</option>
+						{% endfor %}
+					</select>
+				</div>
+			</div>
+
+			{% if dados.page.hasMenuLateral %}
+			<div class="cln p d-none d-md-block">
+				<div class="block d-block d-md-none text-center filtrar">
+					<h4 class="t"><span class="border border-dark p-2 d-inline-block">FILTRAR <i class="fa fa-caret-down"></i></span></h4>
+				</div>
+				<div class="block d-none d-md-block animated fadeIn filtros">
+					{% if dados.prices.items|length > 0 or extra.vl1 %}
+					<div class="listing vars">
+						<h3 class="t block">
+							<span class="float-left">POR PREÇO</span>
+							{% if extra.vl1 %}
+							<span class="float-right"><a href="{{ dados.prices.url_all }}" style="font-size: 10px;">Ver todos</a></span>
+							{% endif %}
+						</h3>
+						<div class="b">
+							{% for item in dados.prices.items %}
+							{% set texto_valor = item.de == "0.01" ? ("até R$"~item.ate|valor) : ("de R$"~item.de|valor~" até R$"~item.ate|valor) %}
+							<a href="{{ item.url }}"{{ extra.vl1 == item.de ? ' class="active"' : '' }}>{{ texto_valor }}</a>
+							{% endfor %}
+						</div>
+					</div>
+					{% endif %}
+					{% if dados.categories_l2|length >= 1 %}
+					<div class="listing">
+						<h3 class="t"><span class="c">{{ dados.page.cl1.nome|upper }}</span></h3>
+						<div class="b">
+							{% for categoria in dados.categories_l2 %}
+							<a href="{{ categoria.url }}"{{ extra.clevel2 and extra.clevel2 in categoria.url  ? ' class="active"' : '' }}>{{ categoria.nome }} ({{ categoria.total_produtos_ativos }})</a>
+							{% endfor %}
+						</div>
+					</div>
+					{% endif %}
+
+					{% if dados.categories_l3|length >= 1 %}
+					<div class="listing">
+						<h3 class="t"><span class="c">{{ dados.page.cl2.nome|upper }}</span></h3>
+						<div class="b">
+							{% for categoria in dados.categories_l3 %}
+							<a href="{{ categoria.url }}"{{ extra.clevel3 and extra.clevel3 in categoria.url ? ' class="active"' : '' }}>{{ categoria.nome }} ({{ categoria.total_produtos_ativos }})</a>
+							{% endfor %}
+						</div>
+					</div>
+					{% endif %}
+
+					{% if dados.colors.items|length >= 1 %}
+					<div class="listing colors">
+						<h3 class="t block">
+							<span class="float-left">COR</span>
+							{% if extra.cor %}
+							<span class="float-right"><a href="{{ dados.colors.url_all }}" style="font-size: 10px;">Ver todos</a></span>
+							{% endif %}
+						</h3>
+						<div class="b">
+							{% for cor in dados.colors.items %}
+							<a href="{{ cor.url }}"{{ extra.cor == cor.id ? ' class="active"' : '' }}>{{ cor.nome }}</a>
+							{% endfor %}
+						</div>
+					</div>
+					{% endif %}
+
+					{% for variacao in dados.variations %}
+					<div class="listing vars">
+						<h3 class="t block">
+							<span class="float-left">{{ variacao.nome|upper }}</span>
+							{% if extra.var %}
+							<span class="float-right"><a href="{{ variacao.url_all }}" style="font-size: 10px;">Ver todos</a></span>
+							{% endif %}
+						</h3>
+						<div class="b">
+							{% for item in variacao.items %}
+							<a href="{{ item.url }}"{{ extra.var == item.id ? ' class="active"' : '' }}>{{ item.valor }}</a>
+							{% endfor %}
+						</div>
+					</div>
+					{% endfor %}
+
+					{% for variacao in dados.attributes %}
+					<div class="listing vars">
+						<h3 class="t block">
+							<span class="float-left">{{ variacao.nome|upper }}</span>
+							{% if extra.var %}
+							<span class="float-right"><a href="{{ variacao.url_all }}" style="font-size: 10px;">Ver todos</a></span>
+							{% endif %}
+						</h3>
+						<div class="b">
+							{% for item in variacao.items %}
+							<a href="{{ item.url }}"{{ extra.attr == item.id ? ' class="active"' : '' }}>{{ item.nome }}</a>
+							{% endfor %}
+						</div>
+					</div>
+					{% endfor %}
+
+					{% if dados.brands.items|length >= 1 %}
+					<div class="listing vars">
+						<h3 class="t block">
+							<span class="float-left">MARCA</span>
+							{% if extra.b %}
+							<span class="float-right"><a href="{{ dados.brands.url_all }}" style="font-size: 10px;">Ver todos</a></span>
+							{% endif %}
+						</h3>
+						<div class="b">
+							{% for item in dados.brands.items %}
+							<a href="{{ item.url }}"{{ extra.b == item.id ? ' class="active"' : '' }}>{{ item.marca }}</a>
+							{% endfor %}
+						</div>
+					</div>
+					{% endif %}
+				</div>
+			</div>
+			{% endif %}
+
+			<div class="cln s{{ not dados.page.hasMenuLateral ? ' w-100' : ''}}">
+				{% if dados.page.banner %}
+				<div class="block mb-4 text-center">
+					{{ dados.page.banner_raw|raw }}
+				</div>
+				{% endif %}
+				{% if dados.page.infotexto %}
+				<div id="seo_info" class="texto mb-4">
+					{{ dados.page.infotexto|raw }}
+				</div>
+				{% endif %}
+
+				<!--
+				<div class="produtos">
+					<div class="row">
+						{% for produto in dados.products.data %}
+						<div class="{{dados.page.hasMenuLateral ? 'col-md-4' : 'col-md-3' }} {{ dados.page.mobile.coluna_dupla ? 'col-6' : 'col-12' }}">
+							{{ store.productBoxDefault(produto) }}
+						</div>
+						{% else %}
+						<div class="col">
+							<div class="alert alert-info text-center">
+								<p>Nenhum produto encontrado no momento em: {{ dados.page.title }}</p>
+							</div>
+						</div>
+						{% endfor %}
+					</div>
+				</div>
+				-->
+
+				<div class="produtos">
+					<div class="row">
+						{% for produto in dados.products.data %}
+						<div class="{{dados.page.hasMenuLateral ? 'col-md-4' : 'col-md-3' }} {{ dados.page.mobile.coluna_dupla ? 'col-6' : 'col-12' }}">
+							{{ include('widgets/box-do-produto.html') }}
+						</div>
+						{% else %}
+						<div class="col">
+							<div class="alert alert-info text-center">
+								<p>Nenhum produto encontrado no momento em: {{ dados.page.title }}</p>
+							</div>
+						</div>
+						{% endfor %}
+					</div>
+					<span class="loading_item hide"></span>
+				</div>
+				<div class="row">
+					<div class="col text-center">
+						<button class="produtos_carregar_mais">Carregar mais produtos</button>
+					</div>
+				</div>
+			</div>
+
+			{% if geral.hasSmartHint %}
+			<div id="smarthint-position-1"></div>
+			<div id="smarthint-position-2"></div>
+			<div id="smarthint-position-3"></div>
+			<div id="smarthint-position-4"></div>
+			<div id="smarthint-position-5"></div>
+			{% endif %}
+
+			{% if geral.hasPerformaAI %}
+			<performa></performa>
+			{% endif %}
+		</section>
+	</div>
+
+	<script>
+		var pageAtual = 1;
+		var totalPaginas = parseInt('{{ dados.pagination.page_total }}');
+		$(function(){
+			 {% if geral.hasSmartHint %}
+				SmartHint.Call('setPage',{type:'category', data: {content: '{{ dados.page.title }}'} });
+			 {% endif %}
+
+			 if(pageAtual >= totalPaginas){
+				 $('.produtos_carregar_mais').hide();
+				 return false;
+			 }
+
+			 $('button.produtos_carregar_mais').click(function(e){
+				 e.preventDefault();
+
+				 // não carrega mais páginas caso a pagina atual for maior do que o total de paginas
+				 if(pageAtual >= totalPaginas)
+					 return false;
+
+				 // carrega a nova página
+				 pageAtual++;
+
+				 $('.produtos_carregar_mais').hide();
+				 $('.loading_item').removeClass('hide');
+				 setTimeout(function(){
+					 $('.loading_item').addClass('hide');
+				 }, 200);
+
+				 params = JSON.parse('{{ json_encode(dados.page.querystring)|raw }}');
+				 params.widget = 'widgets/pagina-categorias-produtos.html';
+				 params.page = pageAtual;
+				 params.pageAtual = pageAtual;
+
+				 $.get('load-widget.php', params, function(d){
+					 $('.produtos .row:first').append(d);
+					 loadCompraRapida();
+				 });
+
+				 if(pageAtual < totalPaginas) {
+					 setTimeout(function(){
+						 $('.produtos_carregar_mais').show();
+					 }, 200);
+				 }
+			 });
+
+			$('.filtrar').click(function(){
+				$(this).toggleClass('mb-4');
+				$('.filtros').toggleClass('d-none');
+			});
+
+			$('.orderby').change(function(){
+				var url = $('option:selected', this).data('url');
+				location.href = url;
+			});
+		});
+	</script>
+
+	{{ dados.page.seo_scripts|raw }}
+</main>
+# HTML do widget pagina-categorias-produtos.html
+{% set dados = store.pageProductsFull(extra) %}
+
+{% for produto in dados.products.data %}
+<div class="{{dados.page.hasMenuLateral ? 'col-md-4' : 'col-md-3' }} {{ dados.page.mobile.coluna_dupla ? 'col-12' : 'col-6' }}">
+	{{ include('widgets/box-do-produto.html') }}
+</div>
+{% endfor %}
+ 
+
+// CSS
+#geral{
+	overflow: inherit;
+}
+
+main.categorias{
+	padding: 0 50px;
+}
+
+#filiais{
+	margin-bottom: 30px;
+
+	.itens{
+		.item{
+			padding: 5px;
+			background-color: #FFF;
+			border: solid 1px #EEE;
+			border-radius: 3px;
+
+			a{
+				width: 100%;
+				height: 100%;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+
+				img{
+					width: auto;
+					max-height: 100px;
+				}
+			}
+		}
+	}
+}
+
+.produtos_carregar_mais{
+	padding: 10px 15px;
+	background-color: #FFF;
+	border: solid 1px #CCC;
+	border-radius: 10px;
+	margin-bottom: 20px;
+	outline: none;
+
+	&:hover{
+		background-color: #EEE;
+	}
+}
+
+Widget Box do Produto
+Widget do box do produto a ser incluso no loop de produtos.
+
+{% set box = html.productBox(produto) %}
+
+<div class="item" data-id="{{ produto.id }}" data-sku="{{ produto.url_sku }}">
+	<a href="{{ box.url_relative }}">
+		{{ box.fotos }}
+	</a>
+	{{ box.selos }}
+	{{ box.titulo }}
+	{{ box.codigo }}
+	{{ box.avaliacoes }}
+	{{ box.valor }}
+	{{ box.parcelamento }}
+	{{ box.countdown }}
+	{{ box.valor_atacado }}
+	{{ box.frete_gratis }}
+	{{ box.html_cores }}
+	{{ box.html_variacoes }}
+	{{ box.html_atributos }}
+	{{ box.categorias }}
+	{{ box.desconto }}
+
+	{% if box.has_botoes %}
+		<div class="botoes">
+			{{ box.botao_olhar }}
+			{{ box.botao_comprar }}
+		</div>
+	{% endif %}
+</div>
+
+Widget de Avaliações para a página inicial
+Monta um carrossel com as últimas avaliações que a loja virtual recebeu. Geralmente é utilizado na página inicial, mas pode ser colocado onde desejar. 
+
+# HTML
+{% set avaliacoes = store.getRatings() %}
+
+{% if avaliacoes.items|length > 0 %}
+<section id="widget_avaliacoes" class="block mb-4">
+	<div class="central">
+		<h2 class="titulo">{{ global.textos_painel.home_avaliacoes ?: 'O QUE ESTÃO FALANDO DA GENTE' }}</h2>
+		<div class="itens owl-carousel owl-theme px-3 mb-4">
+			{{ avaliacoes.raw }}
+		</div>
+		<div class="row mb-4">
+			<div class="col text-center">
+				<a href="avaliacoes/" class="text-dark">Ver todas as avaliações</a>
+			</div>
+		</div>
+	</div>
+</section>
+
+<script>
+    $(function(){
+        $('#widget_avaliacoes .itens').owlCarousel({
+            autoplay: true,
+            autoplayTimeout: 5000,
+            autoplayHoverPause: true,
+            loop: $('#widget_avaliacoes .itens .item').length > 3 ? true : false,
+            dots: true,
+            nav: false,
+            margin: 15,
+            animateOut: 'bounceOutLeft',
+            animateIn: 'bounceInRight',
+            responsive: {
+                0: {
+                    items: 1,
+                },
+                598: {
+                    items: 2,
+                },
+                800: {
+                    items: 3,
+                },
+                1024:{
+                    items: 4,
+                }
+            }
+        });
+    });
+</script>
+{% endif %}
+// CSS
+#widget_avaliacoes{
+	.itens{
+		width: 100%;
+		float: left;
+
+		.item{
+			width: calc(100% - 6px);
+			float: left;
+			text-align: center;
+			margin: 3px;
+			box-shadow: 0 0 3px rgba(0,0,0,0.2);
+			background-color: #FFF;
+			padding: 10px;
+			border-radius: 4px;
+			height: 100%;
+
+			.votos{
+				font-size: 22px;
+				margin-bottom: 10px;
+				color: #DDD;
+
+				.fa-star{
+					color: #FFD700;
+				}
+			}
+
+			.produto{
+				font-size: 14px;
+				line-height: 16px;
+				margin-bottom: 10px;
+
+				a{
+					color: inherit;
+					text-decoration: underline !important;
+				}
+			}
+
+			.comentario{
+				margin-bottom: 10px;
+			}
+		}
+	}
+}
+
+Widget de Banners Principais (slides da página inicial)
+Painel > Marketing > Banners principais (slide) 
+
+# HTML
+{% set slides = store.mainBanner() %}
+{% if slides.raw|length >= 1 %}
+<div class="{{ slides.width == 'block' ? 'block' : 'central' }}{{ slogan == '' ? ' mb-0' : '' }}">
+	<div id="slider" class="mb-0 owl-carousel owl-theme">
+		{% for slide in slides.items %}
+		<div class="item">
+			<div class="{{ slide.foto_mobile == '' ? 'block' : 'd-none d-md-block' }}">
+				{{ slide.desktop_raw|raw }}
+			</div>
+			{% if slide.foto_mobile %}
+			<div class="d-block d-md-none">
+				{{ slide.mobile_raw|raw }}
+			</div>
+			{% endif %}
+		</div>
+		{% endfor %}
+	</div>
+</div>
+{% endif %}
+// CSS
+#slider{
+	width: 100%;
+	float: left;
+	text-align: center;
+
+	.item{
+		width: 100%;
+		float: left;
+
+		img{
+			max-height: 800px;
+		}
+	}
+
+	.owl-dots{
+		position: absolute;
+		width: 100%;
+		margin: 0;
+		bottom: 0;
+		visibility: hidden;
+		opacity: 0;
+	}
+
+	.owl-nav{
+		visibility: hidden;
+		opacity: 0;
+		transition: all .25s ease;
+		margin-top: 0;
+	}
+
+	.owl-prev,
+	.owl-next{
+		position: absolute;
+		top: 0;
+		left: 0;
+		height: calc(100% - 10px);
+		width: 30px;
+		background-color: rgba(195,195,195,0.70);
+		color: #000;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+	}
+
+	.owl-next{
+		left: auto;
+		right: 0;
+	}
+
+	.owl-pagination{
+		line-height: normal;
+		position: absolute;
+		left: 0;
+		bottom: 0;
+		width: 100%;
+	}
+
+	&:hover .owl-nav,
+	&:hover .owl-dots{
+		visibility: visible;
+		opacity: 1;
+	}
+}
+
+Widget de Kits/Looks para a página inicial
+Modelo para mostrar os últimos Kits/Looks cadastrados na loja virtual. Geralmente utilizado na página inicial.
+
+# HTML
+{% set kits = store.productKit() %}
+{% if kits.items|length > 0 and kits.config.show_principal == '1' %}
+<section id="kits" class="block{{ kits.config.formato == '1' ? ' mb-4' : '' }}">
+	<h2 class="titulo mb-3">{{ kits.config.names }}</h2>
+
+	<div class="block {{ kits.config.formato == '1' ? 'carousel owl-carousel owl-theme px-3' : 'row justify-content-center' }}">
+		{% for kit in kits.items %}
+		<div class="block text-center {{ kits.config.formato == '1' ? 'p-1' : 'col-md-3 col-sm-6 mb-4' }}">
+			<div class="item block">
+				<a href="{{ kit.url }}">
+					<div class="foto">
+						<img src="{{ kit.foto }}" alt="{{ kit.titulo }}" class="img-cover lazy" />
+					</div>
+					<div class="det">
+						<h3 class="t">{{ kit.titulo }}</h3>
+						{% if kit.frete_gratis %}
+						<p class="mb-3"><span class="bg-success px-2 py-1 text-white">FRETE GRÁTIS</span></p>
+						{% endif %}
+						<span class="bt-comprar">CONFERIR O {{ kits.config.name|upper }}</span>
+					</div>
+				</a>
+			</div>
+		</div>
+		{% endfor %}
+	</div>
+
+	{% if kits.config.formato == '1' %}
+	<script>
+		$(function(){
+			$('#kits .carousel').owlCarousel({
+				autoplay: false,
+				loop: false,
+				dots: true,
+				nav: false,
+				margin: 15,
+				animateOut: 'bounceOutLeft',
+				animateIn: 'bounceInRight',
+				responsive: {
+					0: {
+						items: 1,
+					},
+					598: {
+						items: 2,
+					},
+					800: {
+						items: 3,
+					},
+					1024:{
+						items: 4,
+					}
+				}
+			});
+		});
+	</script>
+	{% endif %}
+</section>
+{% endif %}
+// CSS
+#kits{
+	.item{
+		background: #FFF;
+		box-shadow: 0 0 5px rgba(0,0,0,0.3);
+		border-radius: 3px;
+		height: 100%;
+		max-width: 260px;
+		position: relative;
+		overflow: hidden;
+		display: block;
+		margin: auto;
+    	float: none;
+
+		.foto{
+			height: 370px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			background-color: #EEE;
+
+			img{
+				max-height: 100%;
+			}
+		}
+
+		&:hover{
+			.det{
+				bottom: 0;
+			}
+		}
+
+		.det{
+			width: 100%;
+			padding: 10px;
+			position: absolute;
+			bottom: -250px;
+			left: 0;
+			background-color: rgba(0,0,0,0.5);
+
+			transition: all .25s;
+
+			.t{
+				font-size: 18px;
+				line-height: 22px;
+				margin-bottom: 10px;
+				color: #FFF;
+			}
+
+			.bt-comprar{
+				display: inline-block;
+				padding: 10px 15px;
+				background-color: #53A412;
+				color: #FFF;
+				border-radius: 3px;
+
+				&:active{
+					opacity: 0.7;
+				}
+			}
+		}
+	}
+}
+
+Widget de Marcas para a página inicial
+Painel > Produtos > Marcas 
+
+# HTML
+{% set marcas = store.getBrands() %}
+{% if marcas.items|length > 0 and marcas.showOnHomePage %}
+<section id="marcas" class="block mb-3">
+	<div class="central">
+		<div class="itens owl-carousel owl-theme px-3">
+			{% for marca in marcas.items %}
+			<div class="item text-center bg-white p-2">
+				<a href="{{ marca.marca_url }}">
+					{% if marca.logo %}
+					<img src="{{ marca.logo }}" alt="{{ marca.marca }}" />
+					{% else %}
+					<h6 class="marca">{{ marca.marca }}</h6>
+					{% endif %}
+				</a>
+			</div>
+			{% endfor %}
+		</div>
+	</div>
+	<script>
+		$(function(){
+			$('#marcas .itens').owlCarousel({
+				autoplay: true,
+				autoplayTimeout: 2000,
+				autoplayHoverPause: true,
+				loop: $('#marcas .itens .item').length > 3 ? true : false,
+				dots: true,
+				nav: false,
+				margin: 15,
+				animateOut: 'bounceOutLeft',
+				animateIn: 'bounceInRight',
+				responsive: {
+					0: {
+						items: 1,
+					},
+					598: {
+						items: 2,
+					},
+					800: {
+						items: 3,
+					},
+					1024:{
+						items: 4,
+					}
+				}
+			});
+		});
+	</script>
+</section>
+{% endif %}
+// CSS
+#marcas{
+	.item{
+		width: 100%;
+		height: 100px;
+		overflow: hidden;
+		border: solid 1px #F5F5F5;
+		display: flex;
+
+		a{
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			width: 100%;
+			height: 100%;
+		}
+
+		img{
+			max-width: 100%;
+			max-height: 100%;
+		}
+
+		.marca{
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			height: 100%;
+			color: #444;
+			font-size: 22px;
+			line-height: 24px;
+			padding: 10px;
+		}
+	}
+}
+
+Widget de Ofertas Periódicas
+Painel > Marketing > Ofertas periódicas 
+
+# HTML
+{% if page == 'principal' %}
+	{% set oferta = store.periodicOffers() %}
+	{% if oferta.id %}
+	<div class="block promo" style="background-color: {{ oferta.cor_fundo }}; color: {{ oferta.cor_texto }}">
+		<div class="central">
+			<div class="d-none d-md-block">
+				<h2 class="first">{{ oferta.texto1 }}</h2>
+				{% if oferta.texto2 %}
+					<h3 class="second">{{ oferta.texto2 }}</h3>
+				{% endif %}
+				{% if oferta.botao_url %}
+					<a href="{{ oferta.botao_url }}" class="botao" style="background-color: {{ oferta.botao_cor_fundo }}; color: {{ oferta.botao_cor_texto }};">{{ oferta.botao_texto }}</a>
+				{% endif %}
+			</div>
+			<div class="d-block d-md-none">
+				{% if oferta.botao_url %}
+					<a href="{{ botao.botao_url }}" class="text-white">
+						<h2 class="first">{{ oferta.texto1_mb }}</h2>
+						{% if oferta.texto2_mb %}
+						<h3 class="second">{{ oferta.texto2_mb }}</h3>
+						{% endif %}
+					</a>
+				{% else %}
+					<h2 class="first">{{ oferta.texto1_mb }}</h2>
+					{% if oferta.texto2_mb %}
+						<h3 class="second">{{ oferta.texto2_mb }}</h3>
+					{% endif %}
+				{% endif %}
+			</div>
+			{% if oferta.countdown %}
+			<span class="countdown d-inline-block px-2 py-1 bg-danger rounded" data-countdown="{{ oferta.data_fim }} 23:59:59" data-pretext="Acaba em" data-postext=" "></span>
+			{% endif %}
+		</div>
+	</div>
+	{% endif %}
+{% endif %}
+// CSS
+.promo{
+	background-color: #FFF;
+	color: #000;
+	text-align: center;
+	padding: 10px;
+	transition: all .25s;
+	margin-top: 0;
+	&.disable{
+		margin-top: -200px;
+	}
+	.first,
+	.second,
+	.botao{
+		display: inline-block;
+		margin: 0 10px;
+		vertical-align: middle;
+	}
+	.botao{
+		background-color: #000;
+		color: #FFF;
+		padding: 10px 26px;
+		font-size: 15px;
+		letter-spacing: 0.12em;
+		&:active{
+			opacity: 0.7;
+		}
+	}
+}
+
+Widget Instagram para a página inicial
+[ATUALIZADO] Mostra as últimas postagens do usuário no Instagram. Utiliza o plugin JS Instafeed e mostra as últimas 6 publicações. Para ativação do lojista, deve-se preencher o  ID de usuário e Token de acesso em Configurações da Loja > Widgets de Redes sociais
+
+{% set instagram = store.widgetInstagram() %}
+{% if instagram.token %}
+<section id="wid_instagram" class="block">
+	<h2 class="titulo"><i class="fa fa-instagram fa-fw"></i> {{ instagram.username }} </h2>
+	<div id="instafeed" class="row mx-0 justify-content-center align-items-center text-center"></div>
+</section>
+<script src="{{ base_system }}/jquery2/instafeed2.min.js"></script>
+<script>
+var accessToken = '{{ instagram.token }}';
+var instaLimit = '{{ instagram.limit }}';
+$(function(){
+	var userFeed = new Instafeed({
+		accessToken: accessToken,
+		template: `
+			{% if recursos.instagram.limit < 6 %}
+				<div class="item col-md-2 itens-{{ recursos.instagram.limit }} m-0 p-0">
+					{% verbatim %}
+					<a href="{{link}}" rel="noreferrer" target="_blank" id="{{id}}"><img src="{{image}}" class="img-cover" alt="Instagram"/></a>
+					{% endverbatim %}
+				</div>
+			{% else %}
+				<div class="col-md-2 col-sm-4 col-6 m-0 p-0">
+					<div class="block" style="height:200px;">
+						{% verbatim %}
+						<a href="{{link}}" rel="noreferrer" target="_blank" id="{{id}}"><img src="{{image}}" class="img-cover" alt="Instagram"/></a>
+						{% endverbatim %}
+					</div>
+				</div>
+			{% endif %}
+		`,
+		limit: parseInt(instaLimit),
+		error: function(e){
+			console.log(e);
+			$('#wid_instagram').remove();
+		}
+	});
+	userFeed.run();
+});
+</script>
+{% endif %}
+
+Widget Posts do Blog para a página inicial
+Mostra as últimas postagens feitas pelo lojista no Blog Integrado. Geralmente usa-se na base da página inicial. 
+
+# HTML
+{% set blog_posts = store.blogPosts() %}
+{% if blog_posts|length >= 1 %}
+<section class="block blog-posts">
+	<div class="central">
+		<h2 class="titulo">NOVIDADES DO BLOG</h2>
+		<section class="row justify-content-center">
+		{% for post in blog_posts %}
+			<article class="col-md-3 col-sm-6 text-center">
+				<div class="block item">
+					<a href="{{ post.blog_url }}/" target="_blank">
+						<div class="foto">
+							<img src="https://sistema.wbuy.com.br/img/loading-heart.svg" data-src="{{ post.imagem }}" alt="{{ post.titulo }}" class="img-cover lazy">
+						</div>
+						<h4 class="t">{{ post.titulo }}</h4>
+					</a>
+				</div>
+			</article>
+		{% endfor %}
+		</section>
+	</div>
+</section>
+{% endif %}
+// CSS
+.blog-posts{
+	background-color: #EEE;
+	padding: 20px;
+
+	.item{
+		height: 100%;
+		background-color: #FFF;
+		box-shadow: 0 0 10px rgba(0,0,0,0.3);
+		overflow: hidden;
+		border-radius: 3px;
+		transition: all .25s;
+
+		.foto{
+			height: 195px;
+			overflow: hidden;
+		}
+
+		.t{
+			padding: 10px;
+			font-size: 20px;
+			line-height: 26px;
+			color: #000;
+		}
+
+		&:hover{
+			background-color: #EEE;
+		}
+	}
+}
+
+Widget Produto SKU
+Widget para ser incluso exclusicamente na página de detalhes do produto.
+
+{% set html = html.productDetailSKU(sku) %}
+{%
+	set setTagsEcommerceProductDetail = store.setTagsEcommerceProductDetail({
+		sku: sku,
+		name: html.matriz.produto,
+		quantity: 1,
+		price: html.matriz.valor_cliente.valor,
+	})
+%}
+
+<div id="produto-sku" data-sku="{{ sku }}" data-widget="produto-sku-html.html" data-loadingwhenchange="true">
+	{{ html.googletags }}
+    {{ html.pontoswb }}
+	{{ html.valor }}
+	{{ html.desconto }}
+	{{ html.compra_minima }}
+	{{ html.parcelamento }}
+	{{ html.contador_regressivo }}
+	{{ html.disponibilidade }}
+	{{ html.valor_atacado }}
+	{{ html.ultimas_unidades }}
+	{{ html.frete_gratis }}
+	{{ html.tabela_medidas }}
+    {{ html.info_assinatura }}
+
+	<div class="estoque">
+		{{ html.grade }}
+		{{ html.campos_adicionais }}
+	</div>
+
+	<div class="botoes">
+		{{ html.botao_carrinho }}
+		{{ html.calculo_frete }}
+	</div>
+
+	{{ html.caracteristicas }}
+</div>
+
+<script>
+	var _cor_id = '{{ html.matriz.cor.id }}';
+	$(function(){
+		if(productPhotosColorSelected != _cor_id){
+			mobileLoadPhotosByColor(_cor_id);
+			productLoadPhotosByColor({
+				cor_id: _cor_id,
+				tipo_fotos: '{{ html.matriz.tipo_fotos }}',
+			});
+			productPhotosColorSelected = _cor_id;
+		}
+
+		{% if html.matriz.grade_tipo == 'grid' %}
+		$('#geral, #mymodal').on('click', '.grade .l .cor .item', function(){
+			let _th = $(this);
+			let color = _th.data('cor');
+			productLoadPhotosByColor({
+				cor_id: color,
+				tipo_fotos: '{{ html.matriz.tipo_fotos }}',
+			});
+			mobileLoadPhotosByColor(color);
+		});
+		{% endif %}
+	});
+</script>
+
+{{ setTagsEcommerceProductDetail }}
+

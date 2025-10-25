@@ -1,0 +1,1878 @@
+Array global
+global.var_mostruario bool - Caso TRUE, a loja virtual está marcada para ser apenas mostruário de produtos
+
+global.var_bloquear_cadastros bool - Caso TRUE, a loja virtual não pode receber novos cadastros de usuários, consequentemente ela é uma loja mostruário
+
+global.var_bloquear_cadastros bool - Caso TRUE, a loja virtual não pode receber novos cadastros de usuários, consequentemente ela é uma loja mostruário
+
+blogPosts
+Disponibiliza como retorno os Posts marcados como Destaque no Blog da loja virtual.
+
+{% set blog_posts = store.blogPosts() %}
+# com parâmetro
+{% set blog_posts = store.blogPosts({limit: '10'}) %}
+# exemplo de uso
+{% set blog_posts = store.blogPosts() %}
+{% if blog_posts|length >= 1 %}
+<section class="block blog-posts">
+	<div class="central">
+		<h2 class="titulo">NOVIDADES DO BLOG</h2>
+		<section class="row justify-content-center">
+		{% for post in blog_posts %}
+			<article class="col-md-3 col-sm-6 text-center">
+				<div class="block item">
+					<a href="{{ post.blog_url }}/" target="_blank">
+						<div class="foto">
+							<img src="{{ post.imagem }}" alt="{{ post.titulo }}" class="img-cover lazy">
+						</div>
+						<h4 class="t">{{ post.titulo }}</h4>
+					</a>
+				</div>
+			</article>
+		{% endfor %}
+		</section>
+	</div>
+</section>
+{% endif %}
+ 
+
+# retorno dos dados
+ 
+Retorna uma matriz de dados
+
+[x].id int
+
+[x].titulo string
+
+[x].blog_url string
+URL direta da postagem no blog
+
+[x].texto string
+
+[x].imagem string
+URL da imagem de exibição
+
+[x].visualizacao string
+Total de visualizações da postagem
+
+[x].cadastro datetime
+Data da postagem
+
+# Lista de parâmetros para consulta
+parâmetro	padrão	descrição
+limit	4	Quantidade de itens a serem retornados na consulta
+
+cart
+Disponibiliza como retorno os dados do carrinho de compras na loja virtual.
+
+{% set carrinho = store.cart() %}
+# exemplo de uso
+{% set carrinho = store.cart() %}
+<a href="carrinho/">SACOLA <span>{{ carrinho.total_product }}</span></a>
+ 
+
+# retorno dos dados
+ 
+total_product int
+Quantidade de produtos adicionados ao carrinho
+
+total_items int
+Quantidade de itens adicionados ao carrinho
+
+cart array
+
+cart.items array
+Matriz de itens adicionados ao carrinho
+
+cart.items[x].sku string
+
+cart.items[x].pid int
+
+cart.items[x].url_relative string
+
+cart.items[x].foto string
+
+cart.items[x].produto string
+
+cart.items[x].cor string
+
+cart.items[x].cor_info array
+
+cart.items[x].cor_info.cor1 string hex
+
+cart.items[x].cor_info.cor2 string hex
+
+cart.items[x].cor_info.img string URL
+
+cart.items[x].variacao string
+
+cart.items[x].variacao_raw string
+
+cart.items[x].prazo_entrega string
+
+cart.items[x].prazo_entrega_raw string
+
+cart.items[x].compra_minima string
+
+cart.items[x].compra_minima_raw string
+
+cart.items[x].frete_gratis string
+
+cart.items[x].frete_gratis_raw string
+
+cart.items[x].promocao string
+
+cart.items[x].promocao_valor string
+
+cart.items[x].valor_unitario string
+
+cart.items[x].tabela string
+
+cart.items[x].quantidade_minima string
+
+cart.items[x].quantidade_em_estoque string
+
+cart.items[x].quantidade string
+
+cart.items[x].valor_parcial string
+
+cart.items[x].campo_adicional string
+
+cart.items[x].kit_id string
+
+cart.items[x].oculto string
+
+cart.items[x].brinde string
+
+cart.items[x].compra_aneis string
+
+cart.items[x].compra_combo string
+
+cart.amount array
+Matriz de dados com os valores do carrinho
+
+cart.amount.subtotal double
+
+cart.amount.discount double
+
+cart.amount.freight array
+
+cart.amount.freight.valor  double
+
+cart.amount.freight.prazo  string - Prazo em dias úteis
+
+cart.amount.freight.servico  string
+
+cart.amount.total double
+
+customerProfiles
+Método responsável por retornar os perfis criados pelo usuário no módulo Vitrine Personalizada de Clientes.
+
+{% set perfis = store.customerProfiles() %}
+ 
+
+Retorna uma matriz de dados caso existam dados e o usuário esteja logado:
+
+x.id - ID do perfil
+
+x.combinacao_id - ID da combinação gerada
+
+x.titulo - Nome do perfil
+
+x.nascimento - Data de nacimento do perfil (AAAA-MM-DD)
+
+x.created - Data da criação do perfil
+
+x.url_produtos - URL direta para a tela de produtos relacionados à combinação do perfil
+
+x.idade - Cálculo da idade retornado com base na data de nascimento. Exemplo: 33
+
+O botão de ação para Editar um perfil deve chamar a classe bt-central-editar-perfil e também passar um parâmetro data-id com o id do perfil em questão:
+
+<button class="btn btn-info bt-central-editar-perfil" data-id="{{ perfil.id }}" data-width="400" data-title="Editar perfil">Editar</button>
+O botão de ação para Excluir um perfil deve chamar a classe bt-central-excluir-perfil e também passar um parâmetro data-id com o id do perfil em questão:
+
+<button class="btn btn-danger bt-central-excluir-perfil" data-id="{{ perfil.id }}">Excluir</button>
+
+customerProfilesConfig
+Método responsável por retornar as configurações de Vitrine Personalizada de Clientes.
+
+{% set config_perfis = store.customerProfilesConfig() %}
+ 
+
+Retorna uma matriz de dados:
+
+ativo - Indica se o módulo está ativo ou não
+
+nome_modulo - Nome do módulo que aparecerá na lista de links do menu da central do usuário. Padrão: Meus perfis
+
+titulo - Título do módulo que aparecerá ao clicar no link do menu. Padrão: Meus perfis
+
+label_botao_new - Texto que aparecerá no botão para criação de novo perfil. Padrão: Criar novo perfil
+
+apresentacao - Texto de apresentação do módulo administrável via painel de controle
+
+url_modulo - URL padrão onde encontram-se a listagem de perfis. Padrão: central/perfis/
+
+featuredIcon
+Disponibiliza como retorno os alertas destaque da loja virtual.
+
+{% set alertas = store.featuredIcon() %}
+# com parâmetro
+{% set alertas = store.featuredIcon({limit: '10'}) %}
+# exemplo de uso
+{% set alertas = store.featuredIcon() %}
+<div id="alerts">
+	<div class="central">
+		{% for alerta in alertas %}
+			{% set icone = alerta.icone_tipo == '1' ?
+				'<i class="fa ' ~ alerta.icone ~ '" style="color: ' ~ alerta.cor_icone ~ '"></i>' :
+				'<img src="' ~ alerta.icone ~ '" alt="' ~ alerta.nome ~ '" />'
+			%}
+			{% if alerta.link %}
+			<p><a href="{{ alerta.link }}" target="{{ alerta.target }}">{{ icone|raw }} <span>{{ alerta.nome }}</span></a></p>
+			{% else %}
+			<p style="background-color: {{ alerta.cor_fundo }}">{{ icone|raw }} <span>{{ alerta.nome }}</span></p>
+			{% endif %}
+		{% endfor %}
+	</div>
+</div>
+ 
+
+# retorno dos dados
+ 
+Retorna uma matriz de dados
+
+[x].id int
+
+[x].nome string
+
+[x].icone string
+Caso tipo 1, retorna o fa do ícone. Caso tipo 2, retorna a URL da imagem
+
+[x].icone_tipo int
+Tipo do icone / 1. Icone interno font awesome (fa); 2. Icone externo (imagem)
+
+[x].cor_texto string hex
+
+[x].cor_icone string hex
+
+[x].cor_fundo string hex
+
+[x].link string
+
+[x].target string
+
+# Lista de parâmetros para consulta
+parâmetro	padrão	descrição
+limit	5	Quantidade de itens a serem retornados na consulta
+
+footerText
+Disponibiliza como retorno os textos para a base cadastrados na loja virtual.
+
+{% set footerText = store.footerText() %}
+# exemplo de uso
+{% set footerText = store.footerText() %}
+<div class="texto">
+	{{ footerText.base|raw }}
+</div>
+ 
+
+# retorno dos dados
+ 
+base string raw
+Texto da base do site
+
+rodape string raw
+Texto para o rodapé do site
+
+Formulários dinâmicos
+Nesta documentação você encontrará 03 métodos para trabalhar com formulários dinâmicos criados via painel de controle, são eles: 
+
+# FORM_ID = O ID do seu formulário, o qual pode ser encontrado no painel de controle.
+{% set formulario =  store.getDynamicForm(FORM_ID) %}
+Retornará todos os dados básicos do formulário
+
+# FORM_ID = O ID do seu formulário, o qual pode ser encontrado no painel de controle.
+{% set perguntas = store.getDynamicFormQuestions(FORM_ID) %}
+Retornará uma matriz com as perguntas do seu formulário dentro de cada grupo pertencente.
+
+# FORM_ID = O ID do seu formulário, o qual pode ser encontrado no painel de controle.
+{% set html = store.getDynamicFormHTML(FORM_ID) %}
+Retornará o HTML completo do formulário para disponibilizar em tela, já com banner e botão de submissão.
+
+getBrands
+Disponibiliza como retorno as marcas cadastradas na loja virtual.
+
+{% set marcas = store.getBrands() %}
+# exemplo de uso
+# neste exemplo as marcas são mostradas dentro de um carrossel owlCarousel
+{% set marcas = store.getBrands() %}
+{% if marcas.items|length > 0 %}
+<section id="marcas" class="block mb-3">
+    <div class="central">
+        <div class="itens owl-carousel owl-theme px-3">
+            {% for marca in marcas.items %}
+            <div class="item text-center bg-white p-2">
+                <a href="{{ marca.marca_url }}">
+                    {% if marca.logo %}
+                    <img src="{{ marca.logo }}" alt="{{ marca.marca }}" />
+                    {% else %}
+                    <h6 class="marca">{{ marca.marca }}</h6>
+                    {% endif %}
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <script>
+        $(function(){
+            $('#marcas .itens').owlCarousel({
+                autoplay: true,
+                autoplayTimeout: 2000,
+                autoplayHoverPause: true,
+                loop: $('#marcas .itens .item').length > 3 ? true : false,
+                dots: true,
+                nav: false,
+                margin: 15,
+                animateOut: 'bounceOutLeft',
+                animateIn: 'bounceInRight',
+                responsive: {
+                    0: {
+                        items: 1,
+                    },
+                    598: {
+                        items: 2,
+                    },
+                    800: {
+                        items: 3,
+                    },
+                    1024:{
+                        items: 4,
+                    }
+                }
+            });
+        });
+    </script>
+</section>
+{% endif %}
+ 
+
+# retorno dos dados
+ 
+items array
+Retorna uma matriz de dados
+
+items[x].id int
+
+items[x].marca string
+
+items[x].marca_url string
+Link para página de produtos da marca na loja virtual
+
+items[x].logo string
+URL da logo
+
+items[x].total_produtos int
+Total de produtos cadastrados para a marca
+
+showOnHomePage boolean
+Permite mostrar o módulo de marcas na página inicial
+
+# Lista de parâmetros para consulta
+parâmetro	padrão	descrição
+destaque	1	1. Mostra apenas marcas definidas como destaque; 0. Mostra marcas que não foram definidas como destaque; ''. (vazio) Mostra todos
+
+getCommentsProduct
+Disponibiliza como retorno os comentários de um produto.
+
+# é obrigatório informar um ID do produto (productId) para consultar seus comentários
+{% set comentarios = store.getCommentsProduct(productId) %}
+# com parâmetro
+{% set comentarios = store.getCommentsProduct(productId, {limit:'5'}) %}
+# exemplo de uso
+{% set comentarios = store.getCommentsProduct(extra.id) %}
+<h2 class="t">AVALIAÇÕES ({{ comentarios.total }})</h2>
+{% if comentarios.total == 0 %}
+<div class="block margin-bottom text-center">
+    <p class="text-warning">Você conhece este produto?<br>O que pode nos contar sobre ele?</p>
+</div>
+{% else %}
+<div class="itens">
+    {% for comentario in comentarios.items %}
+    <div class="item">
+        <div class="h">
+            <span>{{ comentario.nome }} - {{ comentario.data|date('d/m/Y') }}</span>
+            <div class="rat">
+                {{ comentario.estrelas|raw }}
+            </div>
+        </div>
+        {% if comentario.comentario %}
+        <p class="c">{{ comentario.comentario }}</p>
+        {% endif %}
+    </div>
+    {% endfor %}
+    <div itemprop="review" itemtype="http://schema.org/Review" itemscope>
+        <div itemprop="author" itemtype="http://schema.org/Person" itemscope>
+            <meta itemprop="name" content="{{ comentarios.items[0].nome }}" />
+        </div>
+        <div itemprop="reviewRating" itemtype="http://schema.org/Rating" itemscope>
+            <meta itemprop="ratingValue" content="{{ comentarios.items[0].voto }}" />
+            <meta itemprop="bestRating" content="{{ comentarios.items[0].voto }}" />
+        </div>
+    </div>
+</div>
+{% endif %}
+{% if comentarios.items|length >= 1 %}
+<a href="#" class="b mymodal" data-include="inc.php?meio=produtos_det_comentarios&id={{ extra.id }}" data-title="Avaliações"><i class="fa fa-list-alt"></i> ver todas avaliações</a>
+{% endif %}
+<a href="#" class="b mymodal{{ comentarios.items|length == 0 ? ' block' : '' }}" data-include="inc.php?meio=produtos_det_comentar&id={{ extra.id }}" data-width="400" data-title="Avaliar"><i class="fa fa-pencil"></i> deixe sua avaliação</a>
+ 
+
+# retorno dos dados
+ 
+total int
+Total geral de comentarios
+
+items array
+Matriz com comentários encontrados
+
+items[x].id int
+
+items[x].nome string
+
+items[x].email string
+
+items[x].comentario string
+
+items[x].data datatime
+
+items[x].voto int
+
+items[x].estrelas string raw
+Lista de ícones em html <i>
+
+# Lista de parâmetros para consulta
+parâmetro	padrão	descrição
+limit	3	Quantidade de itens a serem retornados na consulta
+ativo	1	Lista comentarios ativos/inativos
+
+getDynamicPages
+Disponibiliza como retorno as páginas dinâmicas cadastradas na loja virtual.
+
+# exemplo de uso sem parâmetros
+{% set paginasDinamicas = store.dynamicPages() %}
+# com parâmetros
+{% set paginasDinamicas = store.dynamicPages({text_upper:true}) %}
+# exemplo de uso
+{% set paginasDinamicas = store.dynamicPages({text_upper:true}) %}
+<div class="links">
+	{% for pagina in paginasDinamicas %}
+	<p>{{ pagina|raw }}</p>
+    {% endfor %}
+</div>
+ 
+
+# Lista de parâmetros para consulta
+ 
+parâmetro	padrão	descrição
+menu	'1'	Página marcada para aparecer no Menu
+Valores: '0' ou '1'
+local	''	Localização da página
+Valores: '' para mostrar todos, '1' para Institucional e '2' para Precisa de ajuda?
+text_upper	false	Determina se o texto retornado vai ser todo em maiúsculo ou não
+Valores: true ou false
+return_simple	false	Defina 'true' para retornar o array puro e 'false' para retornar todos os dados tabulados
+
+getFiliaisMultiloja
+[MULTILOJA] - Retorna as filiais cadastradas para a Matriz com filtro de categorias
+
+# todas as filiais
+{% set filiais = store.getFiliaisMultiloja() %}
+# com filtro por categoria
+{% set filiais = store.getFiliaisMultiloja({cid:'123', sid:'456'}) %}
+# exemplo de uso
+{% set filiais = store.getFiliaisMultiloja() %}
+{% if filiais|length >= 1 %}
+<section id="filiais" class="block">
+	<h2 class="titulo mb-3">FORNECEDORES</h2>
+	<div class="block">
+		<div class="itens owl-auto owl-carousel owl-theme" data-items="4" data-responsive800="2" data-loop="false" data-margin="10">
+			{% for item in filiais %}
+			<div class="item">
+				<a href="{{ item.url_interna_matriz }}"><img src="{{ item.logo }}" alt="{{ item.nome }}" class="img-fluid" /></a>
+			</div>
+			{% endfor %}
+		</div>
+	</div>
+</section>
+{% endif %}
+# retorno dos dados
+
+filiais array
+
+filiais[x].nome string
+
+filiais[x].cidade string
+
+filiais[x].uf string
+
+filiais[x].url_interna_matriz string - URL da loja filial dentro da loja matriz
+
+filiais[x].logo string
+
+# Lista de parâmetros para consulta
+
+parâmetro	padrão	descrição
+cid	 	ID da categoria principal (nivel 1)
+sid	 	ID da categoria nível 2
+order	nome,asc	Possibilidades
+nome,asc => Ordena os resultados pela varíavel nome de forma crescente
+random => Ordena os itens randomicamente
+
+Recursos > Store
+
+getInfoPages
+Disponibiliza como retorno as páginas de informações cadastradas na loja virtual (política de privacidade, termos de uso e dúvidas frequentes).
+
+# exemplo de uso sem parâmetros
+{% set paginasDinamicas = store.getInfoPages() %}
+# com parâmetros
+{% set paginasDinamicas = store.getInfoPages({text_upper:true}) %}
+# exemplo de uso
+{% set paginasInformacoes = store.getInfoPages({text_upper:true}) %}
+<p><strong>INFORMAÇÕES</strong></p>
+<div class="links">
+	{% for pagina in paginasInformacoes %}
+    <p>{{ pagina|raw }}</p>
+    {% endfor %}
+</div>
+ 
+Lista de parâmetros para consulta
+ 
+parâmetro	padrão	descrição
+text_upper	false	Determina se o texto retornado vai ser todo em maiúsculo ou não
+Valores: true ou false
+
+getRatings
+Disponibiliza como retorno as avaliações aprovadas na loja virtual.
+
+{% set avaliacoes = store.getRatings() %}
+# exemplo de uso
+{% set avaliacoes = store.getRatings() %}
+
+{% if avaliacoes.items|length > 0 %}
+<section id="widget_avaliacoes" class="block mb-4">
+    <h2 class="titulo">{{ global.textos_painel.home_avaliacoes ?: 'O QUE ESTÃO FALANDO DA GENTE' }}</h2>
+    <div class="itens owl-carousel owl-theme px-3 mb-4">
+		{{ avaliacoes.raw }}
+	</div>
+	<div class="row mb-4">
+		<div class="col text-center">
+			<a href="avaliacoes/" class="text-dark">Ver todas as avaliações</a>
+		</div>
+	</div>
+</section>
+
+<script>
+    $(function(){
+        $('#widget_avaliacoes .itens').owlCarousel({
+            autoplay: true,
+            autoplayTimeout: 5000,
+            autoplayHoverPause: true,
+            loop: $('#widget_avaliacoes .itens .item').length > 3 ? true : false,
+            dots: true,
+            nav: false,
+            margin: 15,
+            animateOut: 'bounceOutLeft',
+            animateIn: 'bounceInRight',
+            responsive: {
+                0: {
+                    items: 1,
+                },
+                598: {
+                    items: 2,
+                },
+                800: {
+                    items: 3,
+                },
+                1024:{
+                    items: 4,
+                }
+
+            }
+        });
+    });
+</script>
+{% endif %}
+ 
+
+# retorno dos dados
+ 
+items array
+
+items[x].id int
+
+items[x].pid int
+
+ID do produto avaliado
+
+items[x].nome string
+Nome do avaliador
+
+items[x].email string
+E-mail do avaliador
+
+items[x].comentario string
+
+items[x].data datetime
+
+items[x].ip string
+
+items[x].voto double
+
+items[x].produto string
+Título do produto avaliado
+
+items[x].produto_url string
+
+raw string <div> raw
+Elementos montados e prontos para serem inseridos no template
+
+getStoreData
+Retorna os dados básicos da conta/loja em questão.
+
+{% set dados = store.getStoreData() %}
+ 
+
+Dados retornados
+
+id
+
+loja
+
+razao
+
+doc1
+
+cep
+
+endereco
+
+endnum
+
+complemento
+
+bairro
+
+cidade
+
+uf
+
+telefone
+
+celular
+
+getURLCheckoutTemp
+Este método tem como finalidade a adição de um produto temporário no carrinho de compras através de uma URL.
+
+Ao setar os parâmetros desejados para o produto, o método irá retornar a URL completa com o token a qual deverá ser utilizada em um botão e/ou redirecionamento, para que assim seja efetivada a adição do produto no carrinho de compras.
+
+# exemplo de utilização
+{%
+	set urlProduto = store.getURLCheckoutTemp({
+        sku: '1234abc',
+		qtd_minima: '1',
+		valor: 100,
+		produto: 'Produto gerado pela API',
+		peso: 1,
+		comprimento: 10,
+		largura: 15,
+		altura: 10,
+		prazo_producao: 1,
+		frete_gratis: true,
+	})
+%}
+# botão com o resultado da consulta no método acima
+<a href="{{ urlProduto }}">Adicionar ao carrinho</a>
+ 
+
+Parâmetros de entrada para a função getURLCheckoutTemp
+
+sku string - SKU único para identificar o produto
+
+qtd_minima int - Quantidade minima para compra do item
+
+valor double - Valor de venda do item
+
+produto string - Nome e/ou detalhamento do item a ser vendido
+
+peso double - Peso do produto em Kg
+
+comprimento int - Comprimento do produto em centímetros
+
+largura int - Largura do produto em centímetros
+
+altura int - Altura do produto em centímetros
+
+prazo_producao int - Prazo de produção do produto em dias úteis. Caso tenha em estoque e/ou não precise de prazo, informar: 0
+
+frete_gratis boolean - Caso TRUE, o produto não cobrará frete
+
+mainBanner
+Disponibiliza como retorno os banners principais (slides) da loja virtual.
+
+{% set slides = store.mainBanner() %}
+# exemplo de uso
+{% set slides = store.mainBanner() %}
+{% if slides.raw|length >= 1 %}
+<div class="{{ slides.width == 'block' ? 'block' : 'central' }}{{ slogan == '' ? ' mb-0' : '' }}">
+	<div id="slider" class="mb-0 owl-carousel owl-theme">
+		{% for slide in slides.items %}
+		<div class="item">
+			<div class="{{ slide.foto_mobile == '' ? 'block' : 'd-none d-md-block' }}">
+				{{ slide.desktop_raw|raw }}
+			</div>
+			{% if slide.foto_mobile %}
+			<div class="d-block d-md-none">
+				{{ slide.mobile_raw|raw }}
+			</div>
+			{% endif %}
+		</div>
+		{% endfor %}
+	</div>
+</div>
+{% endif %}
+ 
+
+# retorno dos dados
+ 
+items array
+Matriz de itens
+
+items[x].id  string
+
+items[x].titulo string
+
+items[x].foto string
+
+items[x].foto_mobile string
+
+items[x].link  string
+
+items[x].target string
+
+items[x].desktop_raw string raw
+
+items[x].mobile_raw string raw
+
+items[x].avancado array
+
+items[x].avancado.texto string
+
+items[x].avancado.cor_texto string hex
+
+items_per_view int
+Quantidade de itens marcados para exibição por vez
+
+raw array
+Matriz de itens preparados para inserção no código
+
+raw.desktop array
+
+raw.desktop[x] string raw
+Imagem pronta para ser mostrada no HTML
+
+raw.mobile array
+
+raw.mobile[x] string raw
+Imagem pronta para ser mostrada no HTML
+
+width string
+Largura do bloco de slides marcada para exibição. Quando o retorno for block, deve ocupar 100% da tela; Quando forcenter, deve ocupar uma parte centralizada da tela.
+
+# Lista de parâmetros para consulta
+parâmetro	padrão	descrição
+titulo	 	Filtra pelo título do item
+
+pageProducts
+Para facilitar a criação de páginas dinâmicas (rotas), este método tem como retorno uma página completa de produtos para a loja virtual, tais como paginação, categorias, cores e variações dos produtos encontrados.
+
+{% set conteudo = store.pageProducts({
+	total_per_page: '15',
+	page: extra.page,
+	cor: extra.cor,
+	var: extra.var,
+	order: extra.order,
+}) %}
+ 
+
+Para recuperar as variáveis da querystring ($_GET) utilize a variável extra.
+
+O retorno dos produtos você poderá usar por exemplo juntamente com o método store.productBox(produto) ou store.productBoxDefault(produto).
+
+# retorno dos dados
+ 
+pagination array
+
+pagination.page_total int - Total de páginas encontradas para o filtro
+
+pagination.page_atual int - Página atual sendo exibida
+
+pagination.page_prev string - Link direto para a página anterior caso exista
+
+pagination.page_next string - Link direto para a próxima página caso exista
+
+pagination.page_all array - Matriz com links diretos para todas as páginas. Exempo de uso: Como <option> de um <select>
+
+pagination.page_all[x].page int
+
+pagination.page_all[x].url string
+
+categories.cl1 array - Lista de categorias de nível 1 encontradas na página de exibição
+
+categories.cl1[x].id int
+
+categories.cl1[x].nome string
+
+categories.cl1[x].url string
+
+categories.cl1[x].tabela int
+
+categories.cl2 array - Lista de categorias de nível 2 encontradas na página de exibição
+
+categories.cl2[x].id int
+
+categories.cl2[x].nome string
+
+categories.cl2[x].url string
+
+categories.cl2[x].parent array - Dados da categoria de nível 1 "pai" desta
+
+categories.cl2[x].parent.id int
+
+categories.cl2[x].parent.nome string
+
+categories.cl2[x].parent.url string
+
+categories.cl3 array - Lista de categorias de nível 3 encontradas na página de exibição
+
+categories.cl3[x].id int
+
+categories.cl3[x].nome string
+
+categories.cl3[x].url string
+
+categories.cl3[x].parent array - Dados da categoria de nível 2 "pai" desta
+
+categories.cl3[x].parent.id int
+
+categories.cl3[x].parent.nome string
+
+categories.cl3[x].parent.url string
+
+categories.cl3[x].parent.parent array - Dados da categoria de nível 1 "pai" desta
+
+categories.cl3[x].parent.parent.id int
+
+categories.cl3[x].parent.parent.nome string
+
+categories.cl3[x].parent.parent.url string
+
+categories.cl3[x].parent.parent.tabela int
+
+categories_l1 array - Disponível apenas quando usa-se o filtro por categoria de nível 1 e mostra as categorias de nível 1 dos produtos encontrados na páginação
+
+categories_l1[x].id int
+
+categories_l1[x].tabela int
+
+categories_l1[x].nome string
+
+categories_l1[x].url string
+
+categories_l1[x].icone_tipo int
+
+categories_l1[x].icone string
+
+categories_l1[x].cor string hex
+
+categories_l1[x].posicao int
+
+categories_l1[x].menu boolean
+
+categories_l1[x].ordenar string
+
+categories_l1[x].total_produtos int
+
+categories_l1[x].total_produtos_ativos int
+
+categories_l1[x].total_level2 int
+
+categories_l2 array - Disponível apenas quando usa-se o filtro por categoria de nível 1 e mostra as categorias de nível 2 dos produtos encontrados na páginação
+
+categories_l2[x].id int
+
+categories_l2[x].cid int
+
+categories_l2[x].nome string
+
+categories_l2[x].url string
+
+categories_l2[x].posicao int
+
+categories_l2[x].total_produtos int
+
+categories_l2[x].total_produtos_ativos int
+
+categories_l2[x].total_level3 int
+
+categories_l3 array - Disponível apenas quando usa-se o filtro por categoria de nível 2 e mostra as categorias de nível 3 dos produtos encontrados na páginação
+
+categories_l3[x].id int
+
+categories_l3[x].cid int
+
+categories_l3[x].nome string
+
+categories_l3[x].url string
+
+categories_l3[x].posicao int
+
+categories_l3[x].total_produtos int
+
+categories_l3[x].total_produtos_ativos int
+
+colors array
+
+colors.url_all string - URL usada para fazer a filtragem de todos os produtos na tela, removendo a informação da cor selecionada
+
+colors.items array
+
+colors.items[x].id int
+
+colors.items[x].nome string
+
+colors.items[x].primaria string hex
+
+colors.items[x].secundaria string hex
+
+colors.items[x].img string
+
+colors.items[x].ativo bool
+
+colors.items[x].posicao int
+
+colors.items[x].estoque int
+
+colors.items[x].url string - URL direta filtrando já com o código da cor na querystring
+
+variations array
+
+variations[x].nome string - Nome da variação
+
+variations[x].url_all string - URL usada para fazer a filtragem de todos os produtos na tela, removendo a informação da variação selecionada
+
+variations[x].items array
+
+variations[x].items[y].id int
+
+variations[x].items[y].variacao_id int
+
+variations[x].items[y].nome string
+
+variations[x].items[y].valor string
+
+variations[x].items[y].posicao int
+
+variations[x].items[y].ativo bool
+
+variations[x].items[y].estoque int
+
+variations[x].items[y].url string - URL direta filtrando já com o código da var na querystring
+
+attributes array
+
+attributes[x].nome string - Nome do atributo
+
+attributes[x].url_all string - URL usada para fazer a filtragem de todos os produtos na tela, removendo a informação do atrobuto selecionado
+
+attributes[x].items array
+
+attributes[x].items[y].id int
+
+attributes[x].items[y].nome string
+
+attributes[x].items[y].url string - URL direta filtrando já com o código da attr na querystring
+
+filters array - Filtros de ordenção para a página em exibição
+
+filters[x].value string
+
+filters[x].name string
+
+filters[x].data_url string - URL direta filtrando já com o valor do order na querystring
+
+filters[x].selected bool
+
+products array - Os dados da variável products são os mesmos que podem ser encontrados em store.productToBox().
+
+page array - Esta variável somente estará disponível em algumas páginas, pois contém elementos importantes para o funcionamento da mesma. Para saber quais páginas podem ter esta variável, acesse o módulo de Páginas na documentação.
+
+# Lista de parâmetros para consulta
+parâmetro	padrão	descrição
+page	1	Página em exibição
+total_per_page	15	Total de resultados que devem ser exibidos por página
+order	valor-asc	Ordenação dos resultados exibidos
+
+Valores possíveis:
+valor-asc valor-desc produto lancamento além do que pode ser encontrado na Documentação da API
+cor	 	ID da cor
+var	 	ID da variação
+attr	 	ID do atributo
+Podem ser usados também qualquer parâmetro de consulta disponível na Documentação da API
+
+paymentBrand
+Disponibiliza como retorno as bandeiras de pagamento disponíveis na loja virtual.
+
+# sem parâmetros
+{% set pagamentos = store.paymentBrand() %}
+# com parâmetros
+{% set pagamentos = store.paymentBrand({mono: false, replaceMonoUnavailable: true}) %}
+# exemplo de uso
+{% set pagamentos = store.paymentBrand() %}
+<div class="brands">
+	{% for brand in pagamentos.brand %}
+	<span><img src="{{ brand.icone }}" alt="{{ brand.nome }}" /></span>
+    {% endfor %}
+</div>
+ 
+
+# retorno dos dados
+ 
+gateway array - Lista com todas as marcas de pagamento configuradas para a loja virtual (Mercado Pago, PagSeguro, Pagar.me...)
+
+gateway[x].nome string - Nome do gateway
+
+gateway[x].icone string - URL do ícone a ser mostrado
+
+brand array - Lista com todas as bandeiras de pagamento disponíveis na loja virtual
+
+brand[x].nome string - Nome da bandeira (Mastercard, Visa...)
+
+brand[x].brand string - Tipo da bandeira
+
+brand[x].icone string - URL do ícone da bandeira
+
+# Lista de parâmetros para consulta
+parâmetro	padrão	descrição
+mono	false	Caso true, busca imagens brancas com fundo transparente quando existentes.
+replaceMonoUnavailable	true	Caso false e mono true, não faz a troca da imagem com fundo transparente para a imagem padrão colorida quando a mono não existir.
+
+productBoxDefault
+Disponibiliza como retorno os dados prontos do Box do Produto na loja virtual.
+
+É necessario passar como parâmetro um produto, este o qual deve ser recuperado em um laço for como resultado da consulta em store.productToBox()
+
+Diferentemente do método html.productBox() que retorna dados separados, este método retorna um box do produto padrão wBuy montado.
+
+# exemplo de uso
+{% set produtosBox = store.productToBox({limit:'4', order:'random'}) %}
+<div class="row">
+	{% for produto in produtosBox.data %}
+	<div class="col-md-3">
+	{{ store.productBoxDefault(produto) }}
+	</div>
+    {% endfor %}
+</div>
+ 
+
+# Lista de parâmetros para consulta
+parâmetro	padrão	descrição
+total_fotos	2	A quantidade  total de fotos que deve ser retornado por produto
+
+publicityBanner
+Disponibiliza como retorno os banners de publicidade da loja virtual.
+
+# retorna todos
+{% set banner = store.publicityBanner() %}
+# consulta com parâmetros
+{% set banner = store.publicityBanner({tipo:'21', limit:'1'}) %}
+# exemplo de uso individual
+{% set bannerTopo = store.publicityBanner({tipo:'21', limit:'1'}) %}
+
+{% if bannerTopo|length > 0 %}
+	<div class="central">
+		<div class="b_header mb-4">
+			{{ bannerTopo[0].raw|raw }}
+		</div>
+	</div>
+{% endif %}
+# exemplo de uso múltiplo
+{% set bannerTopo = store.publicityBanner({tipo:'21', limit:'2'}) %}
+
+{% if bannerTopo|length > 0 %}
+	<div class="central">
+        <div class="row">
+        {% for banner in bannerTopo %}
+            <div class="col">
+			    {{ banner.raw|raw }}
+            </div>
+        {% endfor %}
+        </div>
+	</div>
+{% endif %}
+# consulta com parâmetros na tela de detalhes do produto
+{% set banner = store.publicityBanner({tipo:'21', limit:'1', produto_id:extra.id}) %}
+# retorno dos dados
+id int
+
+tipo int
+Tipo do banner (vide lista de parâmetros)
+
+formato int
+Formato do banner. 1. Banners em Imagem; 2. Banner em código/script
+
+identificacao string
+
+arquivo string
+URL da imagem do banner
+
+url string
+Link para abertura no clique
+
+target string
+Target do link
+
+codigo string
+Script do banner caso seja formato 2
+
+raw string
+Banner preparado para inserção no código
+
+# Lista de parâmetros para consulta
+parâmetro	padrão	descrição
+tipo	 	Filtra pelo tipo do item
+
+Tipos possíveis:
+21 / Header - Large - 1180px X 120px
+22 / Main - Central - 370px X 250px
+23 / Footer - 1180px X 120px
+24 / Página inicial - Personalizado (apenas para templates avançados)
+25 / Página inicial - Medium - 570px X 300px
+order	random	Tipo de ordenação dos resultados
+
+Possibilidades:
+posicao-asc / Ordena pelo posicionamento de forma crescente
+posicao-desc / Ordena pelo posicionamento de forma decrescente
+random / Ordena randomicamente
+produto_id	 	Id do produto na tela de detalhes do produto.
+Informando este id, será apresentado o banner cadastrado diretamente no produto como prioridade aos banners cadastrados no menu Marketing.
+Opcional.
+limit	10	Limita a quantidade de itens a ser buscado
+
+securitySeal
+Disponibiliza como retorno os selos de segurança cadastrados na loja virtual.
+
+{% set selos = store.securitySeal() %}
+# exemplo de uso
+{% set selos = store.securitySeal() %}
+<div class="seals">
+	{% for selo in selos %}
+	<span>{{ selo|raw }}</span>
+    {% endfor %}
+</div>
+ 
+
+# retorno dos dados
+ 
+Retorna a matriz com os elementos (links e icones) prontos para serem mostrados no HTML
+
+# Lista de parâmetros para consulta
+parâmetro	padrão	descrição
+mono	false	Caso true, busca imagens brancas com fundo transparente quando existentes.
+
+showcaseProduct
+Disponibiliza como retorno as vitrines de produtos para a página inicial configuradas na loja virtual.
+
+{% set vitrines = store.showcaseProduct() %}
+# exemplo de uso
+{% set vitrines = store.showcaseProduct() %}
+
+{% if global.vitrine_visitados_posicao == '1' %}
+	<component data-modulo="produtos-visitados" loading="false" data-shimmer="4"></component>
+{% endif %}
+
+{% for vitrine in vitrines %}
+	{% if loop.index0 == 0 %}
+		{{ storeGoogleTags.dataLayerImpressions(vitrine.produtos)|raw }}
+	{% endif %}
+	<div id="vitrine_{{ vitrine.vitrine.id }}" class="block px-5">
+		{% if vitrine.vitrine.banner_superior %}
+		<div class="b_large text-center">
+			{{ vitrine.vitrine.banner_superior|raw }}
+		</div>
+		{% endif %}
+		<h2 class="titulo my-0 mb-3">{{ vitrine.vitrine.titulo }}</h2>
+		<div class="produtos mb-4">
+			<div class="row justify-content-center {{ vitrine.vitrine.tipo == '1' ? 'owlCarousel owl-carousel owl-theme mx-0 px-0' : '' }}">
+				{% for produto in vitrine.produtos %}
+				<div class="prod {{ vitrine.vitrine.tipo == '1' ? 'block' : 'col-md-3' }}">
+					{{ store.productBoxDefault(produto) }}
+				</div>
+				{% endfor %}
+			</div>
+		</div>
+		{% if vitrine.vitrine.banner_inferior %}
+		<div class="b_large text-center">
+			{{ vitrine.vitrine.banner_inferior|raw }}
+		</div>
+		{% endif %}
+	</div>
+	{% if vitrine.vitrine.tipo == '1' %}
+		<script>
+			$(function(){
+				$('#vitrine_{{ vitrine.vitrine.id }} .owlCarousel').owlCarousel({
+					dots: true,
+					nav: false,
+					loop: false,
+					responsiveClass: true,
+					autoHeight: true,
+					responsive: {
+						0: {
+							items: '2',
+							loop: true,
+							margin: 5,
+							slideBy: '2',
+						},
+						598: {
+							items: '2',
+							margin: 5,
+							slideBy: '2',
+						},
+						800: {
+							items: 3,
+							margin: 15,
+							slideBy: 3,
+						},
+						1024:{
+							items: 4,
+							margin: 15,
+							slideBy: 4,
+						}
+					}
+				});
+			});
+		</script>
+	{% endif %}
+{% endfor %}
+
+{% if global.vitrine_visitados_posicao == '2' %}
+    <component data-modulo="produtos-visitados" loading="false" data-shimmer="4"></component>
+{% endif %}
+ 
+
+# retorno dos dados
+ 
+Retorna uma matriz de dados com as vitrines dispostas.
+
+[x].vitrine array
+
+[x].vitrine.id int
+
+[x].vitrine.titulo string
+
+[x].vitrine.data_limite date
+Data limite para a vitrine ficar online
+
+[x].vitrine.tipo string
+Tipo de funcionamento da vitrine / 1. Carrossel; 2. Livre
+
+[x].vitrine.banner_superior string <img> raw
+
+[x].vitrine.banner_inferior string <img> raw
+
+[x].produtos array (os itens retornados são os mesmos de store.productToBox na matriz data)
+
+socialIcons
+Disponibiliza como retorno os ícones/botões de Redes Sociais configurados na loja virtual.
+
+{% set redesSociais = store.socialIcons() %}
+# exemplo de uso
+{% set redesSociais = store.socialIcons() %}
+<div class="social">
+	{% for item in redesSociais.raw %}
+	{{ item|raw }}
+    {% endfor %}
+</div>
+ 
+
+# retorno dos dados
+ 
+items array
+
+items[x].id int
+
+items[x].tipo int
+Tipo do icone / 1. Icone interno font-awesome (fa); 2. Icone externo (imagem)
+
+items[x].icone string
+
+items[x].titulo string
+
+items[x].url string
+
+items[x].cor_fundo string
+
+items[x].cor_icone string
+
+raw array
+Matriz de itens prontos para serem usados no template
+
+store.categories()
+Disponibiliza como retorno as categorias de nível 1, nível 2 e nível 3 permitidas a aparecem na loja virtual. Marcadas para aparecer no menu ou não, mostra todas.
+
+{% set categorias = store.categories({conta_produtos: false}) %}
+# exemplo de uso
+{% set categorias = store.categories({conta_produtos: false}) %}
+{% if categorias|length > 1 %}
+<div class="drop">
+    <div class="grid">
+		{% for categoria in categorias %}
+		<ul class="list">
+			<li class="t"><a href="{{ categoria.url }}/" target="{{ categoria.target }}"{{ categoria.cor != '' ? ' style=color:' ~ categoria.cor : '' }}>{{ categoria.nome }}</a></li>
+			{% for level2 in categoria.subs %}
+			<li><a href="{{ level2.url }}/"><i class="fa fa-caret-right muted"></i> {{ level2.nome }}</a></li>
+			{% for level3 in level2.subs %}
+			<li class="indent"><a href="{{ level3.url }}/">- {{ level3.nome }}</a></li>
+			{% endfor %}
+		{% endfor %}
+		</ul>
+	{% endfor %}
+	</div>
+</div>
+{% endif %}
+ 
+
+# retorno dos dados
+ 
+Retorna uma matriz com todas as categorias disponíveis
+
+[x].id int
+
+[x].tabela int
+
+[x].nome string
+
+[x].url string
+
+[x].target string
+
+[x].icone_tipo int
+
+[x].icone string
+
+[x].cor string
+
+[x].posicao int
+
+[x].menu boolean
+
+[x].ativo boolean
+
+[x].ordenar string
+
+[x].total_produtos int
+
+[x].subs array
+
+[x].subs[y].id int
+
+[x].subs[y].nome string
+
+[x].subs[y].url string
+
+[x].subs[y].posicao int
+
+[x].subs[y].total_produtos int
+
+[x].subs[y].subs array
+
+[x].subs[y].subs[z].id int
+
+[x].subs[y].subs[z].nome string
+
+[x].subs[y].subs[z].url string
+
+[x].subs[y].subs[z].posicao int
+
+[x].subs[y].subs[z].total_produtos int
+
+
+Quando disponível pelo lojista a aparição do menu Kits/Looks no menu de categorias, ele terá a seguinte aparência e aparecerá sempre no índice 0, ou seja, no começo da matriz.
+
+[x].nome string
+
+[x].url string
+
+store.categoriesMenu()
+Disponibiliza como retorno as categorias de nível 1, nível 2 e nível 3 permitidas a aparecem no menu de departamentos da loja virtual
+
+{% set categorias_menu = store.categoriesMenu() %}
+# exemplo de uso
+{% set categorias_menu = store.categoriesMenu() %}
+
+<nav>
+    <ul>
+        {% for cat in categorias_menu|slice(0,12) %}
+        <li>
+		    <a href="{{ cat.url }}" target="{{ cat.target }}">
+			{{ cat.icone_categoria|raw }}
+			<span{{ cat.cor != '' ? ' style=color:' ~ cat.cor : '' }}>{{ cat.nome }}</span>
+			{% if cat.subs|length >= 1 %}
+			    <span class="fa fa-angle-down"></span>
+            {% endif %}
+			</a>
+			{% if cat.subs|length >= 1 %}
+			<div class="drop{{ cat.banner != '' ? ' subs' : '' }}">
+				<div class="central">
+					<div class="grid">
+					{% for level2 in cat.subs %}
+						<ul class="list">
+							<li class="t"><a href="{{ level2.url }}">{{ level2.nome }}</a></li>
+							{% for level3 in level2.subs %}
+								<li><a href="{{ level3.url }}"><i class="fa fa-caret-right muted"></i> {{ level3.nome }}</a></li>
+							{% endfor %}
+						</ul>
+					{% endfor %}
+					</div>
+					{% if cat.banner != '' %}
+						<div class="bnr">
+							{{ cat.banner|raw }}
+						</div>
+					{% endif %}
+				</div>
+			</div>
+		    {% endif %}
+    	</li>
+    {% endfor %}
+    </ul>
+</nav>
+ 
+
+# retorno dos dados
+ 
+Retorna uma matriz com todas as categorias disponíveis
+
+[x].id int
+
+[x].tabela int
+
+[x].nome string
+
+[x].url string
+
+[x].target string
+
+[x].icone_tipo int
+
+[x].icone string
+
+[x].cor string
+
+[x].posicao int
+
+[x].menu boolean
+
+[x].ativo boolean
+
+[x].ordenar string
+
+[x].total_produtos int
+
+[x].subs array
+
+[x].subs[y].id int
+
+[x].subs[y].nome string
+
+[x].subs[y].url string
+
+[x].subs[y].posicao int
+
+[x].subs[y].total_produtos int
+
+[x].subs[y].subs array
+
+[x].subs[y].subs[z].id int
+
+[x].subs[y].subs[z].nome string
+
+[x].subs[y].subs[z].url string
+
+[x].subs[y].subs[z].posicao int
+
+[x].subs[y].subs[z].total_produtos int
+
+# Lista de parâmetros para consulta
+parâmetro	padrão	descrição
+conta_produtos	false	Caso true retorna a quantidade de produtos em cada categoria
+order	posicao,asc	Opções: id,asc - id,desc - nome,asc - nome,desc - posicao,asc - posicao,desc
+menu	1	1. Mostra categorias que devem aparecer no menu; 0. Mostra categorias ocultar do menu; 'all'. Mostra todas as categorias, independente se está oculta ou não
+menu_mobile	 	1. Mostra categorias que devem aparecer no menu; 0. Mostra categorias ocultar do menu
+
+store.getTextTop()
+Disponibiliza como retorno o texto configurado pelo lojista para o topo da loja
+
+{% set televendas = store.getTextTop() %}
+# exemplo de uso
+{% set televendas = store.getTextTop() %}
+{% if televendas %}
+<div class="block">
+    <a href="fale-conosco/"><i class="fa fa-phone"></i> {{ televendas }}</a>
+</div>
+{% endif %}
+ 
+
+# retorno dos dados
+ 
+Retorna uma string pronta para ser usada.
+
+store.periodicOffers()
+Método responsável pelo retorno dos dados de Ofertas Periódicas cadastradas na loja virtual. Geralmente mostrado no topo, acima do header da loja.
+
+Sempre será retornada apenas 1 oferta periódica cadastrada por vez e a ordenação da aparição é randômica (RANDOM).
+
+{% set oferta = store.periodicOffers() %}
+# exemplo de uso
+{% set oferta = store.periodicOffers() %}
+{% if oferta.id %}
+	<div class="block promo" style="background-color: {{ oferta.cor_fundo }}; color: {{ oferta.cor_texto }}">
+		<div class="central">
+			<div class="d-none d-md-block">
+				<h2 class="first">{{ oferta.texto1 }}</h2>
+				{% if oferta.texto2 %}
+					<h3 class="second">{{ oferta.texto2 }}</h3>
+				{% endif %}
+				{% if oferta.botao_url %}
+					<a href="{{ oferta.botao_url }}" class="botao" style="background-color: {{ oferta.botao_cor_fundo }}; color: {{ oferta.botao_cor_texto }};">{{ oferta.botao_texto }}</a>
+				{% endif %}
+			</div>
+			<div class="d-block d-md-none">
+				{% if oferta.botao_url %}
+					<a href="{{ botao.botao_url }}" class="text-white">
+						<h2 class="first">{{ oferta.texto1_mb }}</h2>
+						{% if oferta.texto2_mb %}
+						<h3 class="second">{{ oferta.texto2_mb }}</h3>
+						{% endif %}
+					</a>
+				{% else %}
+					<h2 class="first">{{ oferta.texto1_mb }}</h2>
+					{% if oferta.texto2_mb %}
+						<h3 class="second">{{ oferta.texto2_mb }}</h3>
+					{% endif %}
+				{% endif %}
+			</div>
+			{% if oferta.countdown %}
+			<span class="countdown d-inline-block px-2 py-1 bg-danger rounded" data-countdown="{{ oferta.data_fim }} 23:59:59" data-pretext="Acaba em" data-postext=" "></span>
+			{% endif %}
+		</div>
+	</div>
+{% endif %}
+# retorno dos dados
+
+id int
+
+texto1 string - Texto principal
+
+texto1_mb string - Texto principal para versão mobile
+
+texto2 string - Texto secundário
+
+texto2 string - Texto secundário para versão mobile
+
+data_inicio date - Data de início para mostrar o módulo
+
+data_fim date - Data de termino para mostrar o módulo
+
+cor_fundo string hex - Cor de fundo do módulo
+
+cor_texto string hex - Cor padrão do texto do módulo
+
+cor_texto string hex - Cor padrão do texto do módulo
+
+botao_cor_fundo string hex - Cor de fundo do botão de ação
+
+botao_cor_texto string hex - Cor do texto do botão de ação
+
+botao_texto string - Texto do botão de ação
+
+botao_url string - URL a ser definida para o botão de ação
+
+countdown boolean - Se true, deve-se mostrar o contador regressivo
+
+store.productDetail()
+Disponibiliza como retorno os dados para a página de detalhes de um produto na loja virtual.
+
+{% set produto = store.productDetail(produto_id) %}
+Para recuperar o ID do produto em questão, use a variável extra.id
+
+produto_id int - ID do produto - obrigatório
+
+# exemplo de uso
+{% set produto = store.productDetail(extra.id) %}
+Para um exemplo completo de utilização, acesse o Modelo da Página.
+
+
+# retorno dos dados
+product_id int
+
+sku string
+
+category array
+
+category.cl1 array
+
+category.cl1.id int
+
+category.cl1.nome string
+
+category.cl1.url string
+
+category.cl1.tabela int
+
+category.cl2 array
+
+category.cl2.id int
+
+category.cl2.nome string
+
+category.cl2.url string
+
+category.cl3 array
+
+category.cl3.id int
+
+category.cl3.nome string
+
+category.cl3.url string
+
+breadcrumbs array
+
+breadcrumbs[x].page string
+
+breadcrumbs[x].url string
+
+photos_type int - 1. Horizontal; 2.Vertical
+
+photos array
+
+photos[x].cor_id int
+
+photos[x].foto string - URL da foto em tamanho normal
+
+photos[x].foto_mini string - URL da foto em tamanho menor
+
+photos[x].cor_count int - Contador sequencial por cor, muito importante para ser usado quando da necessidade de mudar a visualização da foto quando clica-se na cor desejada da variação do estoque.
+
+photos[x].video string - URL do vídeo. Só será mostrado caso o produto tenha vídeo cadastrado e aparecerá no índice zero da matriz de fotos.
+
+photos[x].video_raw string raw - Iframe do vídeo pronto para ser inserido no template. Só será mostrado caso o produto tenha vídeo cadastrado e aparecerá no índice zero da matriz de fotos.
+
+badge sring raw - DIV pronta com os dados dos selos informados pelo lojista, para o produto
+
+product string - Nome do produto
+
+code string - Código do produto
+
+description string - Descrição do produto
+
+specification string - Informações adicionais
+
+items string - Itens inclusos
+
+warranty string - Detalhes da garantia
+
+video array
+
+video.foto string - Thumb do vídeo
+
+video.foto_mini string -  Thumb do vídeo
+
+video.video string - URL do vídeo
+
+video.video_raw string raw - Iframe do vídeo pronto para inclusão no template
+
+brand array - Marca do produto
+
+brand.id int
+
+brand.nome string
+
+brand.url string
+
+likes int - Quantidade de curtidas que o produto teve
+
+rating array - Avaliações do produto
+
+rating.votes array
+
+rating.votes.total int - Todal de avaliações
+
+rating.votes.pontos int - Média de todas as avaliações. De 0 a 5.
+
+rating.percent double - Percentual das avaliações em relação à média. De 0 a 100.
+
+allow_comments boolean - Permite ou não que os consumidores possam comentar no produto
+
+attachments array - Anexos do produto
+
+attachments[x].id int
+
+attachments[x].titulo string
+
+attachments[x].arquivo string - URL para download do arquivo do anexo
+
+attachments[x].filename_download string - Nome recomendado para o download
+
+store.widgetInstagram()
+[ATUALIZADO] Disponibiliza como retorno os dados cadastrados para widget do Instagram da loja.
+
+{% set instagram = store.widgetInstagram() %}
+# exemplo de uso
+{% set instagram = store.widgetInstagram() %}
+{% if instagram.token %}
+<section id="wid_instagram" class="block">
+	<h2 class="titulo"><i class="fa fa-instagram fa-fw"></i> {{ instagram.username }} </h2>
+	<div id="instafeed" class="row mx-0 justify-content-center align-items-center text-center"></div>
+</section>
+<script src="{{ base_system }}/jquery2/instafeed2.min.js"></script>
+<script>
+var accessToken = '{{ instagram.token }}';
+var instaLimit = '{{ instagram.limit }}';
+$(function(){
+	var userFeed = new Instafeed({
+		accessToken: accessToken,
+		template: `
+			{% if recursos.instagram.limit < 6 %}
+				<div class="item col-md-2 itens-{{ recursos.instagram.limit }} m-0 p-0">
+					{% verbatim %}
+					<a href="{{link}}" rel="noreferrer" target="_blank" id="{{id}}"><img src="{{image}}" class="img-cover" alt="Instagram"/></a>
+					{% endverbatim %}
+				</div>
+			{% else %}
+				<div class="col-md-2 col-sm-4 col-6 m-0 p-0">
+					<div class="block" style="height:200px;">
+						{% verbatim %}
+						<a href="{{link}}" rel="noreferrer" target="_blank" id="{{id}}"><img src="{{image}}" class="img-cover" alt="Instagram"/></a>
+						{% endverbatim %}
+					</div>
+				</div>
+			{% endif %}
+		`,
+		limit: parseInt(instaLimit),
+		error: function(e){
+			console.log(e);
+			$('#wid_instagram').remove();
+		}
+	});
+	userFeed.run();
+});
+</script>
+{% endif %}
+ 
+
+# retorno dos dados
+ 
+token string - Token válido da conta do usuário
+
+username string - Nome do usuário no Instagram para ser mostrado no front-end
+
+limit string - Limite máximo de itens a serem mostrados (padrão: 6)
+
+store.widgetNews()
+Disponibiliza como retorno as configurações do widget para cadastramento de e-mail para newsletters (geralmente colocado na base da loja)
+
+{% set widgetNews = store.widgetNews() %}
+# exemplo de uso
+{% set widgetNews = store.widgetNews() %}
+<div class="news">
+    <h3 class="t">{{ widgetNews.title }}</h3>
+    <div class="box">
+        <p>{{ widgetNews.subtitle1 }}<br>{{ widgetNews.subtitle2 }}</p>
+        <form id="frmNews" action="news_func.php" method="post" class="post">
+            <input type="email" name="email" class="input-block-level" aria-label="Digite seu e-mail aqui" required placeholder="Digite seu e-mail aqui">
+            <button type="submit">ME INSCREVER</button>
+        </form>
+    </div>
+</div>
+ 
+
+# retorno dos dados
+ 
+title string
+
+subtitle1 string
+
+subtitle2 string
+
+userStore
+Disponibiliza como retorno os dados do usuário logado na loja virtual.
+
+{% set usuario = store.userStore() %}
+# exemplo de uso
+{% set usuario = store.userStore() %}
+<div>
+    {% if usuario.logged %}
+    <a href="central/dados/">CONTA</a>
+    {% else %}
+    <a href="login/">ENTRAR</a>
+    {% endif %}
+</div>
+ 
+
+# retorno dos dados
+ 
+logged bool (true|false)
+Retorna a identificação se o usuário fez login na loja
+
+data.id int
+ID único do usuário logado
+
+data.nome string
+Nome do usuário logado
+
+data.tabela int
+ID da tabela de preços do usuário logado
+
+data.credito double
+Valor em R$ que o usuário logado tem disponível em créditos na loja
+
+data.pontos int
+Quantidade de pontos que o usuário logado tem acumulado na loja
+
+widgetFacebook
+Disponibiliza como retorno o widget do Facebook (plugin de página) da loja virtual.
+
+{% set fb = store.widgetFacebook() %}
+# exemplo de uso
+{% set fb = store.widgetFacebook() %}
+<div class="widget-fb">
+    {{ fb.raw|raw }}
+</div>
+
+# retorno dos dados
+ 
+account string
+URL da página no Facebook
+
+raw string
+Elemento pronto para ser usado no template
+
+# Lista de parâmetros para consulta
+parâmetro	padrão	descrição
+width	400	Largura do widget em pixels
+height	220	Altura do widget em pixels
+
+
+

@@ -1,0 +1,122 @@
+Recursos
+
+Recursos
+
+Chamadas auxiliares
+Para alguns eventos, você pode executar chamadas auxiliares a fim de tornar seu tema mais dinâmico.
+
+Tipos de chamadas possíveis:
+
+frete_bloqueio_cep - Método responsável por retornar a informação sobre a possibilidade de entrega em um determinado CEP pela loja em questão.
+
+Exemplo de requisição
+
+$.post('auxiliar', {f:'frete_bloqueio_cep', cep:'87013-150'}, function(d){
+    console.log(d);
+}, 'json');
+
+Checklist de módulos obrigatórios para desenvolvimento de um template wBuy
+Para que seu template seja aprovado pela equipe wBuy, ele deve respeitar os recursos obrigatórios contantes neste checklist. Os demais são importantes, porém opcionais.
+
+Logo da loja - store.getLogo()
+Formulário para busca de produtos
+Verificação e/ou identificação do usuário logado e links diretos para logar e/ou cadastrar - store.userStore()
+Ícone/botão para o carrinho de compras - store.cart()
+Formas de pagamento - store.paymentBrand()
+Selos de segurança - store.securitySeal()
+Informações de atendimento - store.footerText()
+Icones redes sociais - store.socialIcons()
+Formuláro para cadastramento na newsletter (junte-se a nós) - store.widgetNews()
+Banners principais (slide) - store.mainBanner()
+Banners de publicidade - store.publicityBanner()
+Slogan da loja - store.getSlogan()
+Categorias/departamentos da loja - store.categories() e/ou store.categoriesMenu()
+Texto para o topo da loja - store.getTextTop()
+Links para páginas dinâmicas - store.dynamicPages()
+Widget do Facebook - store.widgetFacebook() 
+Widget do Instagram - store.widgetInstagram()
+Widget de ofertas periódicas - store.periodicOffers()
+Widget de alertas destaque - store.featuredIcon()
+Widget de avaliações - store.getRatings()
+Widget de marcas - store.getBrands()
+Widget de posts do Blog - store.blogPosts()
+Verificações sobre se a loja permite venda ou não através da variável de mostruário - global.var_mostruario
+Verificação se a loja tem vitrines para serem mostradas na página inicial no lugar da lista padrão de produtos - store.showcaseActiveIds()
+Indicação de locais para aparecimento das vitrines do SmartHint - geral.hasSmartHint
+Indicação de locais para aparecimento das vitrines do PerformaAI - geral.hasperformaAI
+Manter a Logo da plataforma wBuy (embora não faça parte do template, seria possível remover por CSS)
+
+Recursos gerais
+Aqui você encontra uma lista de recursos, métodos e variáveis gerais para uma melhor implementação do template. Conforme forem surgindo novas necessidades, esta página será modificada, o que pode ocorrer constantemente. Atente-se!
+
+base_system string - URL direta do armazenamento base dos arquivos, geralmente é: https://sistema.wbuy.com.br/
+
+base string - URL base da loja virtual. Exemplo: https://www.lojavirtualwbuy.com.br/
+
+page string - Nome da página que está sendo exibida no momento da navegação, exemplo: principal
+
+extra array - Variável responsável por armazenar toda variável que estiver na URL atual (GET). Exemplo: extra.id
+
+seo.title string - Título do site que está sendo mostrado no momento da navegação
+
+store.showMenuIcons() bool - Configuração a qual permite ou não que mostre ícones no menu de departamentos da loja virtual.
+
+store.getLogo() string - Retornará a URL da logo cadastrada para a loja virtual
+
+store.getSlogan() string - Retornará o slogan da loja virtual
+
+store.showcaseActiveIds() array - Retornará os IDs das vitrines ativadas para a página inicial da loja virtual
+
+geral.hasSmartHint bool - Configuração que permite mostrar itens HTML e JS do serviço Smart Hint quando este está habilitado pelo lojista
+
+geral.hasPerformaAI bool - Configuração que permite mostrar itens HTML e JS do serviço PerformaAI quando este está habilitado pelo lojista
+
+geral.hasOpolen bool - Configuração que permite mostrar itens HTML e JS do serviço O Pólen quando este está habilitado pelo lojista
+
+global array - Matriz com configurações das mais diversas pertencences à loja virtual (documentado no futuro)
+
+detect método - Responsável pela detecção do navegador do usuário
+
+detect.isMobile() boolean - Caso true, o acesso está sendo feito por um dispositivo móvel
+
+seo.title string - Título da página atual
+
+recursos array - Matriz com recursos adicionais para a loja virtual
+
+recursos.categoria_geral_titulo_menu string - Título que deve ser apresentado no menu "Toda a loja"
+
+# funções PHP no Twig
+
+separa(string, pre, pos) - Usada para unir duas palavras/variáveis de forma fácil.
+Exemplo de utilização: {{ categoria_level1.nome ~ separa(categoria_level2.nome, ' - ') }}
+Exemplo de resultado caso categoria_level2.nome exista: Informática - Acessórios
+Exemplo de resultado caso categoria_level2.nome não exista: Informática
+
+plural(quantidade, texto_base, singular, plural) - Usada para determinar se um texto será mostrado como singular ou plural
+Exemplo de utilização: Disponível em {{ prazo_producao }} {{ plural(prazo_producao, 'dia', ' útil', 's úteis') }}
+Exemplo de resultado caso a quantidade seja 1: Disponível em 1 dia útil
+Exemplo de resultado caso a quantidade seja 5: Disponível em 5 dias úteis
+
+# Listeners Javascript
+Através dos ouvintes (listener) você poderá recuperar algumas informações em tempo real.
+
+Basta colocar o código abaixo em um arquivo Javascript de seu projeto e estará funcionando. Trabalhe o que desejar dentro da função de retorno de readListener().
+
+// Para saber a quantidade de produtos que existem adicionada ao carrinho assim que são adicionados (tempo real)
+readListener('totalItensCarrinho', function(qtd){
+    console.log('A quantidade de itens no carrinho foi modificada para', qtd);
+
+   // exemplo de uso
+    $('.shop_cart .qtd').text(qtd);
+
+   // exemplo de como atualizar um widget dentro de um elemento via JS
+   // no caso, atualizaria a lista de itens no carrinho suspenso
+    $.post('load-widget.php', {widget:'widgets/suspended-cart.html'}, function(d){
+	    $('.shop_cart .drop').html(d);
+	});
+});
+// Para saber em tempo real quando um produto foi adicionado ao carrinho
+readListener('onAddProductCart', function(fetch){
+    console.log('produto adicionado');
+});
+
